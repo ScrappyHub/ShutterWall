@@ -1,0 +1,10 @@
+# Runtime evidence (reproducible, not source)
+proofs/
+
+# Scratch + temp scripts
+scripts/_scratch/
+
+# Editor / system
+.vscode/
+*.log
+*.tmp
