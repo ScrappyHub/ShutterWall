@@ -22,7 +22,7 @@ function Write-Utf8NoBomLf {
   $enc = New-Object System.Text.UTF8Encoding($false)
   $norm = ($Text -replace "`r`n","`n") -replace "`r","`n"
   if (-not $norm.EndsWith("`n")) { $norm += "`n" }
-  [System.IO.File]::WriteAllText($Path, $norm, $enc)
+  [System.IO.File]::WriteAllText($Path,$norm,$enc)
 }
 
 function Get-Sha256HexFromBytes {
@@ -68,12 +68,16 @@ function Append-NdjsonLine {
 
   $enc = New-Object System.Text.UTF8Encoding($false)
   [byte[]]$bytes = $enc.GetBytes([string]$normalized)
-  
 
-  $fs = [System.IO.File]::Open($Path, [System.IO.FileMode]::Append, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+  $fs = [System.IO.File]::Open(
+    $Path,
+    [System.IO.FileMode]::Append,
+    [System.IO.FileAccess]::Write,
+    [System.IO.FileShare]::Read
+  )
   try {
     $fs.Write($bytes, 0, $bytes.Length)
-    $fs.Write($lf, 0, $lf.Length)
+    $fs.WriteByte([byte]10)
   }
   finally {
     $fs.Dispose()
@@ -84,10 +88,10 @@ function Parse-GateFile {
   param([Parameter(Mandatory=$true)][string]$Path)
   $tokens = $null
   $errors = $null
-  [void][System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$errors)
+  [void][System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$tokens,[ref]$errors)
   if ($errors -and $errors.Count -gt 0) {
     $e = $errors[0]
-    throw ("PARSE_GATE_FAIL: {0}:{1}:{2}: {3}" -f $Path, $e.Extent.StartLineNumber, $e.Extent.StartColumnNumber, $e.Message)
+    throw ("PARSE_GATE_FAIL: {0}:{1}:{2}: {3}" -f $Path,$e.Extent.StartLineNumber,$e.Extent.StartColumnNumber,$e.Message)
   }
 }
 
@@ -101,7 +105,7 @@ function Get-DefaultSubnetPrefix {
     } |
     Sort-Object InterfaceMetric, SkipAsSource, PrefixLength)
 
-  if (@(@($ips)).Count -lt 1) {
+  if (@($ips).Count -lt 1) {
     throw "NO_ACTIVE_IPV4_FOUND"
   }
 
@@ -204,7 +208,7 @@ function Get-CameraLikelihood {
     [Parameter(Mandatory=$false)][int[]]$OpenPorts = @()
   )
 
-  [int[]]$ports = @(@($OpenPorts))
+  [int[]]$ports = @($OpenPorts)
   $score = 0
   $reasons = New-Object System.Collections.Generic.List[string]
 
@@ -235,7 +239,7 @@ function Get-CameraLikelihood {
   [ordered]@{
     level = $level
     score = $score
-    reasons = @(@($reasons))
+    reasons = @($reasons)
   }
 }
 
@@ -245,7 +249,7 @@ function Get-VendorGuess {
     [Parameter(Mandatory=$false)][int[]]$OpenPorts = @()
   )
 
-  [int[]]$ports = @(@($OpenPorts))
+  [int[]]$ports = @($OpenPorts)
   if (-not $Hostname) { $Hostname = "" }
   $hn = $Hostname.ToLowerInvariant()
 
@@ -317,11 +321,10 @@ Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
   end_host = $EndHost
 })
 
-$candidates = @(@(Get-DiscoveryCandidates -SubnetPrefix $SubnetPrefix -StartHost $StartHost -EndHost $EndHost -DoActiveSweep ([bool]$ActiveSweep)))
-Write-Host ("DISCOVERY_CANDIDATES: " + @(@($candidates)).Count) -ForegroundColor Yellow
+$candidates = @(Get-DiscoveryCandidates -SubnetPrefix $SubnetPrefix -StartHost $StartHost -EndHost $EndHost -DoActiveSweep ([bool]$ActiveSweep))
+Write-Host ("DISCOVERY_CANDIDATES: " + @($candidates).Count) -ForegroundColor Yellow
 
-$portPlan = @(80, 443, 554, 8000, 8080, 8443)
-
+$portPlan = @(80,443,554,8000,8080,8443)
 $devices = @()
 $fingerprints = @()
 
@@ -339,8 +342,7 @@ foreach ($ip in $candidates) {
     }
   }
 
-  [int[]]$openPortsArr = @(@($openPorts))
-
+  [int[]]$openPortsArr = @($openPorts)
   $likelihood = Get-CameraLikelihood -Ip $ip -Hostname $hostname -OpenPorts $openPortsArr
   $vendorGuess = Get-VendorGuess -Hostname $hostname -OpenPorts $openPortsArr
 
@@ -360,7 +362,7 @@ foreach ($ip in $candidates) {
     vendor_guess = [string]$vendorGuess
     camera_likelihood = [string]$likelihood.level
     camera_likelihood_score = [int]$likelihood.score
-    camera_reasons = @(@($likelihood.reasons))
+    camera_reasons = @($likelihood.reasons)
     first_seen_utc = [DateTime]::UtcNow.ToString("o")
     last_seen_utc = [DateTime]::UtcNow.ToString("o")
   }
@@ -371,7 +373,7 @@ foreach ($ip in $candidates) {
     ip = [string]$ip
     probable_vendor = [string]$vendorGuess
     probable_model = $null
-    open_tcp_ports = @(@($openPortsArr))
+    open_tcp_ports = @($openPortsArr)
     exposed_services = @(
       foreach ($p in $openPortsArr) {
         switch ([int]$p) {
@@ -408,21 +410,19 @@ foreach ($ip in $candidates) {
     device_id = $deviceId
     ip = [string]$ip
     hostname = $hostname
-    open_tcp_ports = @(@($openPortsArr))
+    open_tcp_ports = @($openPortsArr)
     camera_likelihood = [string]$likelihood.level
     vendor_guess = [string]$vendorGuess
   })
 }
 
-$devices = @(@($devices))
-$fingerprints = @(@($fingerprints))
-$cameraLikeDevices = @(@($devices | Where-Object {
+$cameraLikeDevices = @($devices | Where-Object {
   $_.camera_likelihood -eq "probable_camera" -or $_.camera_likelihood -eq "possible_camera"
-}))
+})
 
-[int]$deviceCount = @(@($devices)).Count
-[int]$fingerprintCount = @(@($fingerprints)).Count
-[int]$cameraLikeCount = @(@($cameraLikeDevices)).Count
+[int]$deviceCount = @($devices).Count
+[int]$fingerprintCount = @($fingerprints).Count
+[int]$cameraLikeCount = @($cameraLikeDevices).Count
 
 $devicesDoc = [ordered]@{
   schema = "shutterwall.discovery.collection.v1"
@@ -430,7 +430,7 @@ $devicesDoc = [ordered]@{
   subnet_prefix = $SubnetPrefix
   generated_at_utc = [DateTime]::UtcNow.ToString("o")
   count = $deviceCount
-  devices = @(@($devices))
+  devices = @($devices)
 }
 
 $fingerprintsDoc = [ordered]@{
@@ -439,7 +439,7 @@ $fingerprintsDoc = [ordered]@{
   subnet_prefix = $SubnetPrefix
   generated_at_utc = [DateTime]::UtcNow.ToString("o")
   count = $fingerprintCount
-  fingerprints = @(@($fingerprints))
+  fingerprints = @($fingerprints)
 }
 
 $summary = [ordered]@{
