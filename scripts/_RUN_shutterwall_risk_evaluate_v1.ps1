@@ -99,7 +99,7 @@ function Read-JsonFile {
   if ([string]::IsNullOrWhiteSpace($raw)) {
     throw ("JSON_INPUT_EMPTY: " + $Path)
   }
-  $raw | ConvertFrom-Json -Depth 100
+  $raw | ConvertFrom-Json
 }
 
 function Get-LatestRunRoot {
@@ -117,16 +117,20 @@ function Get-LatestRunRoot {
 
 function Add-RiskFinding {
   param(
-    [Parameter(Mandatory=$true)][System.Collections.ArrayList]$Findings,
+    [Parameter(Mandatory=$true)][AllowEmptyCollection()][System.Collections.ArrayList]$Findings,
     [Parameter(Mandatory=$true)][string]$DeviceId,
     [Parameter(Mandatory=$true)][string]$Severity,
     [Parameter(Mandatory=$true)][string]$RuleId,
     [Parameter(Mandatory=$true)][string]$Title,
     [Parameter(Mandatory=$true)][string]$Reason,
-    [Parameter(Mandatory=$true)][string[]]$EvidenceRefs,
+    [Parameter(Mandatory=$true)][AllowEmptyCollection()][string[]]$EvidenceRefs,
     [Parameter(Mandatory=$true)][string]$RecommendedAction,
     [Parameter(Mandatory=$true)][bool]$Enforceable
   )
+
+  if ($null -eq $Findings) {
+    throw "FINDINGS_COLLECTION_NULL"
+  }
 
   $seed = [ordered]@{
     device_id = $DeviceId
@@ -155,11 +159,11 @@ function Add-RiskFinding {
 function Get-SeverityRank {
   param([Parameter(Mandatory=$true)][string]$Severity)
   switch ($Severity) {
-    "critical" { return 4 }
-    "high"     { return 3 }
-    "medium"   { return 2 }
-    "low"      { return 1 }
-    default    { return 0 }
+    "critical" { 4; break }
+    "high"     { 3; break }
+    "medium"   { 2; break }
+    "low"      { 1; break }
+    default    { 0; break }
   }
 }
 
@@ -178,17 +182,17 @@ if (-not (Test-Path -LiteralPath $RunRoot)) {
   throw ("RUN_ROOT_MISSING: " + $RunRoot)
 }
 
-$DevicesPath       = Join-Path $RunRoot "devices.discovery.v1.json"
-$FingerprintsPath  = Join-Path $RunRoot "devices.fingerprint.v1.json"
-$SummaryPath       = Join-Path $RunRoot "run.summary.json"
-$RiskPath          = Join-Path $RunRoot "device.risk.collection.v1.json"
-$ReceiptPath       = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
+$DevicesPath      = Join-Path $RunRoot "devices.discovery.v1.json"
+$FingerprintsPath = Join-Path $RunRoot "devices.fingerprint.v1.json"
+$SummaryPath      = Join-Path $RunRoot "run.summary.json"
+$RiskPath         = Join-Path $RunRoot "device.risk.collection.v1.json"
+$ReceiptPath      = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
 
 $devicesDoc      = Read-JsonFile -Path $DevicesPath
 $fingerprintsDoc = Read-JsonFile -Path $FingerprintsPath
 $summaryDoc      = Read-JsonFile -Path $SummaryPath
 
-$devices      = @($devicesDoc.devices)
+$devices = @($devicesDoc.devices)
 $fingerprints = @($fingerprintsDoc.fingerprints)
 
 $fpByDeviceId = @{}
@@ -338,8 +342,8 @@ foreach ($device in $devices) {
 }
 
 $findings = @($allFindings)
-
 $deviceRiskSummaries = @()
+
 foreach ($device in $devices) {
   $deviceId = [string]$device.device_id
   $deviceFindings = @($findings | Where-Object { $_.device_id -eq $deviceId })
