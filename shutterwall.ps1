@@ -30,27 +30,25 @@ function Show-Help {
   Write-Host "  shutterwall quick-check"
   Write-Host "  shutterwall inspect"
   Write-Host "  shutterwall secure"
+  Write-Host "  shutterwall secure-low"
   Write-Host "  shutterwall replay-confirmed-camera <ip> [runroot]"
   Write-Host "  shutterwall live-whatif"
   Write-Host "  shutterwall live-apply"
 }
 
 switch ($Command.ToLowerInvariant()) {
-  "help" {
-    Show-Help
-  }
+  "help" { Show-Help }
 
   "version" {
-    Write-Host "SHUTTERWALL_VERSION: 0.1.0" -ForegroundColor Green
+    Write-Host "SHUTTERWALL_VERSION: 0.2.0" -ForegroundColor Green
   }
 
   "doctor" {
     $ok = $true
-
     $required = @(
       "scripts\_RUN_shutterwall_discovery_fingerprint_v3.ps1",
       "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1",
-      "scripts\_RUN_shutterwall_enforcement_plan_v2.ps1",
+      "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1",
       "scripts\_RUN_shutterwall_live_enforcement_v3.ps1",
       "scripts\_RUN_shutterwall_operator_review_v1.ps1",
       "inspect_shutterwall.ps1",
@@ -66,36 +64,19 @@ switch ($Command.ToLowerInvariant()) {
       }
     }
 
-    $receiptRoot = Join-Path $RepoRoot "proofs\receipts"
-    if (-not (Test-Path -LiteralPath $receiptRoot)) {
-      Write-Host ("MISSING: " + $receiptRoot) -ForegroundColor Red
-      $ok = $false
-    }
-
     $latestRun = $null
     try { $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot } catch {}
+    if ($latestRun) { Write-Host ("LATEST_RUN_ROOT: " + $latestRun) -ForegroundColor Cyan }
 
-    if ($latestRun) {
-      Write-Host ("LATEST_RUN_ROOT: " + $latestRun) -ForegroundColor Cyan
-    } else {
-      Write-Host "LATEST_RUN_ROOT: none yet" -ForegroundColor Yellow
-    }
-
-    if ($ok) {
-      Write-Host "SHUTTERWALL_DOCTOR_OK" -ForegroundColor Green
-    } else {
-      throw "SHUTTERWALL_DOCTOR_FAIL"
-    }
+    if ($ok) { Write-Host "SHUTTERWALL_DOCTOR_OK" -ForegroundColor Green } else { throw "SHUTTERWALL_DOCTOR_FAIL" }
   }
 
   "quick-check" {
-    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "inspect_shutterwall.ps1")
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "inspect_shutterwall.ps1")
   }
 
   "inspect" {
-    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "inspect_shutterwall.ps1")
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "inspect_shutterwall.ps1")
   }
 
   "secure" {
@@ -107,7 +88,7 @@ switch ($Command.ToLowerInvariant()) {
       -RunRoot $latestRun
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v2.ps1") `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
       -MinimumSeverity medium
@@ -119,11 +100,29 @@ switch ($Command.ToLowerInvariant()) {
       -WhatIf
   }
 
-  "replay-confirmed-camera" {
-    if ([string]::IsNullOrWhiteSpace($Arg1)) {
-      throw "IP_REQUIRED"
-    }
+  "secure-low" {
+    $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot
 
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -MinimumSeverity low
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -WhatIf
+  }
+
+  "replay-confirmed-camera" {
+    if ([string]::IsNullOrWhiteSpace($Arg1)) { throw "IP_REQUIRED" }
     $ip = $Arg1
     $runRoot = if ([string]::IsNullOrWhiteSpace($Arg2)) { Get-LatestRunRoot -RepoRoot $RepoRoot } else { $Arg2 }
 
@@ -151,7 +150,5 @@ switch ($Command.ToLowerInvariant()) {
       -Apply
   }
 
-  default {
-    throw ("UNKNOWN_COMMAND: " + $Command)
-  }
+  default { throw ("UNKNOWN_COMMAND: " + $Command) }
 }
