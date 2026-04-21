@@ -59,7 +59,8 @@ function Append-NdjsonLine {
 
 function Parse-GateFile {
   param([Parameter(Mandatory=$true)][string]$Path)
-  $tok = $null; $err = $null
+  $tok = $null
+  $err = $null
   [void][System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$tok,[ref]$err)
   if($err -and $err.Count -gt 0){
     $e = $err[0]
@@ -134,7 +135,6 @@ function Ensure-FirewallRule {
     [Parameter(Mandatory=$true)][ValidateSet("Inbound","Outbound")][string]$Direction,
     [Parameter(Mandatory=$true)][string]$RemoteAddress
   )
-
   $existing = @(Get-NetFirewallRule -DisplayName $RuleName -ErrorAction SilentlyContinue)
   if (@($existing).Count -gt 0) { return "already_present" }
 
@@ -156,7 +156,7 @@ if (-not (Test-Path -LiteralPath $RepoRoot)) { throw ("REPO_ROOT_MISSING: " + $R
 if (-not $RunRoot) { $RunRoot = Get-LatestRunRoot -RepoRoot $RepoRoot }
 if (-not (Test-Path -LiteralPath $RunRoot)) { throw ("RUN_ROOT_MISSING: " + $RunRoot) }
 
-$PlanPath        = Join-Path $RunRoot "device.enforcement.plan.v2.json"
+$PlanPath        = Join-Path $RunRoot "device.enforcement.plan.v3.json"
 $LiveReceiptPath = Join-Path $RunRoot "device.enforcement.live.receipts.v3.json"
 $ReceiptPath     = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
 
@@ -197,7 +197,7 @@ foreach ($action in $actions) {
   }
 
   $outRule = ""
-  $inRule  = ""
+  $inRule = ""
   $whatIfDetail = ""
   $supportsIsolation = $false
 
@@ -225,6 +225,12 @@ foreach ($action in $actions) {
       $inRule  = "ShutterWall V3 Restrict Stream In " + $targetIp
       $whatIfDetail = "Would create paired firewall block rules for stream restriction."
     }
+    "plan_quarantine_device" {
+      $supportsIsolation = $true
+      $outRule = "ShutterWall V3 Quarantine Out " + $targetIp
+      $inRule  = "ShutterWall V3 Quarantine In " + $targetIp
+      $whatIfDetail = "Would create paired inbound and outbound quarantine firewall rules."
+    }
     default {
       $supportsIsolation = $false
     }
@@ -242,16 +248,8 @@ foreach ($action in $actions) {
   }
 
   $results = @()
-
-  if ($outRule) {
-    $r = Ensure-FirewallRule -RuleName $outRule -Direction Outbound -RemoteAddress $targetIp
-    $results += $r
-  }
-
-  if ($inRule) {
-    $r = Ensure-FirewallRule -RuleName $inRule -Direction Inbound -RemoteAddress $targetIp
-    $results += $r
-  }
+  if ($outRule) { $results += Ensure-FirewallRule -RuleName $outRule -Direction Outbound -RemoteAddress $targetIp }
+  if ($inRule)  { $results += Ensure-FirewallRule -RuleName $inRule  -Direction Inbound  -RemoteAddress $targetIp }
 
   $finalResult = if (@($results | Where-Object { $_ -eq "applied" }).Count -gt 0) { "applied" } else { "already_present" }
   $ruleBundle = if ($inRule) { $outRule + " | " + $inRule } else { $outRule }
