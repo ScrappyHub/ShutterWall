@@ -31,6 +31,7 @@ function Show-Help {
   Write-Host "  shutterwall inspect"
   Write-Host "  shutterwall secure"
   Write-Host "  shutterwall secure-low"
+  Write-Host "  shutterwall secure-force"
   Write-Host "  shutterwall replay-confirmed-camera <ip> [runroot]"
   Write-Host "  shutterwall live-whatif"
   Write-Host "  shutterwall live-apply"
@@ -40,7 +41,7 @@ switch ($Command.ToLowerInvariant()) {
   "help" { Show-Help }
 
   "version" {
-    Write-Host "SHUTTERWALL_VERSION: 0.2.0" -ForegroundColor Green
+    Write-Host "SHUTTERWALL_VERSION: 0.2.1" -ForegroundColor Green
   }
 
   "doctor" {
@@ -119,6 +120,27 @@ switch ($Command.ToLowerInvariant()) {
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
       -WhatIf
+  }
+
+  "secure-force" {
+    $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -MinimumSeverity low
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -Apply
   }
 
   "replay-confirmed-camera" {
