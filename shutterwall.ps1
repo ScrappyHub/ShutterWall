@@ -37,7 +37,7 @@ switch ($Command) {
       -RepoRoot $RepoRoot -RunRoot $latest
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
-      -RepoRoot $RepoRoot -RunRoot $latest -MinimumSeverity low
+      -RepoRoot $RepoRoot -RunRoot $latest -PolicyProfile enterprise_strict
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
       -RepoRoot $RepoRoot -RunRoot $latest -WhatIf
@@ -52,7 +52,7 @@ switch ($Command) {
       -RepoRoot $RepoRoot -RunRoot $latest
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
-      -RepoRoot $RepoRoot -RunRoot $latest -MinimumSeverity low
+      -RepoRoot $RepoRoot -RunRoot $latest -PolicyProfile enterprise_strict
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
       -RepoRoot $RepoRoot -RunRoot $latest -WhatIf
@@ -67,7 +67,7 @@ switch ($Command) {
       -RepoRoot $RepoRoot -RunRoot $latest
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
-      -RepoRoot $RepoRoot -RunRoot $latest -MinimumSeverity low
+      -RepoRoot $RepoRoot -RunRoot $latest -PolicyProfile enterprise_strict
 
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
       -RepoRoot $RepoRoot -RunRoot $latest -Apply -Force
