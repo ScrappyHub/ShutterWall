@@ -29,8 +29,9 @@ function Show-Help {
   Write-Host "  shutterwall doctor"
   Write-Host "  shutterwall quick-check"
   Write-Host "  shutterwall inspect"
-  Write-Host "  shutterwall secure"
-  Write-Host "  shutterwall secure-low"
+  Write-Host "  shutterwall secure-home"
+  Write-Host "  shutterwall secure-smallbiz"
+  Write-Host "  shutterwall secure-enterprise"
   Write-Host "  shutterwall secure-force"
   Write-Host "  shutterwall replay-confirmed-camera <ip> [runroot]"
   Write-Host "  shutterwall live-whatif"
@@ -41,7 +42,7 @@ switch ($Command.ToLowerInvariant()) {
   "help" { Show-Help }
 
   "version" {
-    Write-Host "SHUTTERWALL_VERSION: 0.2.1" -ForegroundColor Green
+    Write-Host "SHUTTERWALL_VERSION: 0.3.0" -ForegroundColor Green
   }
 
   "doctor" {
@@ -49,7 +50,7 @@ switch ($Command.ToLowerInvariant()) {
     $required = @(
       "scripts\_RUN_shutterwall_discovery_fingerprint_v3.ps1",
       "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1",
-      "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1",
+      "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1",
       "scripts\_RUN_shutterwall_live_enforcement_v3.ps1",
       "scripts\_RUN_shutterwall_operator_review_v1.ps1",
       "inspect_shutterwall.ps1",
@@ -80,7 +81,7 @@ switch ($Command.ToLowerInvariant()) {
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "inspect_shutterwall.ps1")
   }
 
-  "secure" {
+  "secure-home" {
     $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
@@ -89,10 +90,10 @@ switch ($Command.ToLowerInvariant()) {
       -RunRoot $latestRun
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
-      -MinimumSeverity medium
+      -PolicyProfile home_safe
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
       -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
@@ -101,7 +102,7 @@ switch ($Command.ToLowerInvariant()) {
       -WhatIf
   }
 
-  "secure-low" {
+  "secure-smallbiz" {
     $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
@@ -110,10 +111,31 @@ switch ($Command.ToLowerInvariant()) {
       -RunRoot $latestRun
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
-      -MinimumSeverity low
+      -PolicyProfile smallbiz_balanced
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -WhatIf
+  }
+
+  "secure-enterprise" {
+    $latestRun = Get-LatestRunRoot -RepoRoot $RepoRoot
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun
+
+    & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
+      -RepoRoot $RepoRoot `
+      -RunRoot $latestRun `
+      -PolicyProfile enterprise_strict
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
       -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
@@ -131,10 +153,10 @@ switch ($Command.ToLowerInvariant()) {
       -RunRoot $latestRun
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
-      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v3.ps1") `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
-      -MinimumSeverity low
+      -PolicyProfile enterprise_strict
 
     & $PSExe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
       -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
