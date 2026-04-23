@@ -156,7 +156,7 @@ if (-not (Test-Path -LiteralPath $RepoRoot)) { throw ("REPO_ROOT_MISSING: " + $R
 if (-not $RunRoot) { $RunRoot = Get-LatestRunRoot -RepoRoot $RepoRoot }
 if (-not (Test-Path -LiteralPath $RunRoot)) { throw ("RUN_ROOT_MISSING: " + $RunRoot) }
 
-$PlanPath        = Join-Path $RunRoot "device.enforcement.plan.v3.json"
+$PlanPath        = Join-Path $RunRoot "device.enforcement.plan.v4.json"
 $LiveReceiptPath = Join-Path $RunRoot "device.enforcement.live.receipts.v3.json"
 $ReceiptPath     = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
 
@@ -230,6 +230,9 @@ foreach ($action in $actions) {
       $outRule = "ShutterWall V3 Quarantine Out " + $targetIp
       $inRule  = "ShutterWall V3 Quarantine In " + $targetIp
       $whatIfDetail = "Would create paired inbound and outbound quarantine firewall rules."
+    }
+    "plan_monitor_only" {
+      $supportsIsolation = $false
     }
     default {
       $supportsIsolation = $false
