@@ -163,6 +163,7 @@ switch ($Command.ToLowerInvariant()) {
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
       -Apply
+      -Force
   }
 
   "replay-confirmed-camera" {
@@ -192,6 +193,7 @@ switch ($Command.ToLowerInvariant()) {
       -RepoRoot $RepoRoot `
       -RunRoot $latestRun `
       -Apply
+      -Force
   }
 
   default { throw ("UNKNOWN_COMMAND: " + $Command) }

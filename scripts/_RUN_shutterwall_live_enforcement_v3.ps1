@@ -2,7 +2,8 @@ param(
   [Parameter(Mandatory=$true)][string]$RepoRoot,
   [Parameter(Mandatory=$false)][string]$RunRoot,
   [Parameter(Mandatory=$false)][switch]$Apply,
-  [Parameter(Mandatory=$false)][switch]$WhatIf
+  [Parameter(Mandatory=$false)][switch]$WhatIf,
+  [Parameter(Mandatory=$false)][switch]$Force
 )
 
 Set-StrictMode -Version Latest
@@ -12,64 +13,44 @@ if (-not $Apply -and -not $WhatIf) { $WhatIf = $true }
 if ($Apply -and $WhatIf) { throw "INVALID_MODE: specify only one of -Apply or -WhatIf" }
 
 function Write-Utf8NoBomLf {
-  param([Parameter(Mandatory=$true)][string]$Path,[Parameter(Mandatory=$true)][string]$Text)
+  param([string]$Path,[string]$Text)
   $dir = Split-Path -Parent $Path
-  if ($dir -and -not (Test-Path -LiteralPath $dir)) { [void](New-Item -ItemType Directory -Path $dir -Force) }
+  if ($dir -and -not (Test-Path $dir)) { [void](New-Item -ItemType Directory -Path $dir -Force) }
   $enc = New-Object System.Text.UTF8Encoding($false)
   $norm = ($Text -replace "`r`n","`n") -replace "`r","`n"
   if (-not $norm.EndsWith("`n")) { $norm += "`n" }
   [System.IO.File]::WriteAllText($Path,$norm,$enc)
 }
 
-function Get-Sha256HexFromBytes {
-  param([byte[]]$Bytes)
-  $sha = [System.Security.Cryptography.SHA256]::Create()
-  try { $hash = $sha.ComputeHash($Bytes) } finally { $sha.Dispose() }
-  (($hash | ForEach-Object { $_.ToString("x2") }) -join "")
-}
-
-function Get-Sha256HexFromText {
-  param([string]$Text)
-  $enc = New-Object System.Text.UTF8Encoding($false)
-  [byte[]]$bytes = $enc.GetBytes([string]$Text)
-  Get-Sha256HexFromBytes -Bytes $bytes
-}
-
 function Convert-ObjectToJsonStable {
-  param([Parameter(Mandatory=$true)]$InputObject,[Parameter(Mandatory=$false)][int]$Depth = 12)
+  param($InputObject,[int]$Depth = 12)
   ($InputObject | ConvertTo-Json -Depth $Depth)
 }
 
 function Append-NdjsonLine {
-  param([Parameter(Mandatory=$true)][string]$Path,[Parameter(Mandatory=$true)]$Object)
+  param([string]$Path,$Object)
   $dir = Split-Path -Parent $Path
-  if ($dir -and -not (Test-Path -LiteralPath $dir)) { [void](New-Item -ItemType Directory -Path $dir -Force) }
-  $line = Convert-ObjectToJsonStable -InputObject $Object -Depth 12
+  if ($dir -and -not (Test-Path $dir)) { [void](New-Item -ItemType Directory -Path $dir -Force) }
+  $line = Convert-ObjectToJsonStable -InputObject $Object -Depth 20
   $normalized = ($line -replace "`r`n","`n") -replace "`r","`n"
   $enc = New-Object System.Text.UTF8Encoding($false)
   [byte[]]$bytes = $enc.GetBytes([string]$normalized)
   $fs = [System.IO.File]::Open($Path,[System.IO.FileMode]::Append,[System.IO.FileAccess]::Write,[System.IO.FileShare]::Read)
-  try {
-    $fs.Write($bytes,0,$bytes.Length)
-    $fs.WriteByte([byte]10)
-  } finally {
-    $fs.Dispose()
-  }
+  try { $fs.Write($bytes,0,$bytes.Length); $fs.WriteByte([byte]10) } finally { $fs.Dispose() }
 }
 
 function Parse-GateFile {
-  param([Parameter(Mandatory=$true)][string]$Path)
-  $tok = $null
-  $err = $null
+  param([string]$Path)
+  $tok=$null;$err=$null
   [void][System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$tok,[ref]$err)
   if($err -and $err.Count -gt 0){
-    $e = $err[0]
+    $e=$err[0]
     throw ("PARSE_GATE_FAIL: {0}:{1}:{2}: {3}" -f $Path,$e.Extent.StartLineNumber,$e.Extent.StartColumnNumber,$e.Message)
   }
 }
 
 function Read-JsonFile {
-  param([Parameter(Mandatory=$true)][string]$Path)
+  param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) { throw ("JSON_INPUT_MISSING: " + $Path) }
   $raw = [System.IO.File]::ReadAllText($Path)
   if ([string]::IsNullOrWhiteSpace($raw)) { throw ("JSON_INPUT_EMPTY: " + $Path) }
@@ -77,7 +58,7 @@ function Read-JsonFile {
 }
 
 function Get-LatestRunRoot {
-  param([Parameter(Mandatory=$true)][string]$RepoRoot)
+  param([string]$RepoRoot)
   $base = Join-Path $RepoRoot "proofs\runs\shutterwall"
   if (-not (Test-Path -LiteralPath $base)) { throw ("RUNS_ROOT_MISSING: " + $base) }
   $dirs = @(Get-ChildItem -LiteralPath $base -Directory | Sort-Object LastWriteTimeUtc -Descending)
@@ -91,50 +72,8 @@ function Test-IsAdministrator {
   $p.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-function Add-EnforcementReceipt {
-  param(
-    [Parameter(Mandatory=$true)][AllowEmptyCollection()][System.Collections.ArrayList]$Receipts,
-    [Parameter(Mandatory=$true)][string]$ActionId,
-    [Parameter(Mandatory=$true)][string]$TargetDeviceId,
-    [Parameter(Mandatory=$true)][string]$TargetIp,
-    [Parameter(Mandatory=$true)][string]$ActionType,
-    [Parameter(Mandatory=$true)][string]$Mode,
-    [Parameter(Mandatory=$true)][string]$Result,
-    [Parameter(Mandatory=$true)][string]$Detail,
-    [Parameter(Mandatory=$false)][string]$RuleName
-  )
-  $seed = [ordered]@{
-    action_id = $ActionId
-    target_ip = $TargetIp
-    action_type = $ActionType
-    mode = $Mode
-    result = $Result
-    detail = $Detail
-    rule_name = $RuleName
-  }
-  $receiptId = Get-Sha256HexFromText -Text (Convert-ObjectToJsonStable -InputObject $seed -Depth 8)
-  $receipt = [ordered]@{
-    schema = "device.enforcement.receipt.v3"
-    receipt_id = $receiptId
-    action_id = $ActionId
-    target_device_id = $TargetDeviceId
-    target_ip = $TargetIp
-    action_type = $ActionType
-    mode = $Mode
-    result = $Result
-    detail = $Detail
-    rule_name = $RuleName
-    ts_utc = [DateTime]::UtcNow.ToString("o")
-  }
-  [void]$Receipts.Add($receipt)
-}
-
 function Ensure-FirewallRule {
-  param(
-    [Parameter(Mandatory=$true)][string]$RuleName,
-    [Parameter(Mandatory=$true)][ValidateSet("Inbound","Outbound")][string]$Direction,
-    [Parameter(Mandatory=$true)][string]$RemoteAddress
-  )
+  param([string]$RuleName,[ValidateSet("Inbound","Outbound")][string]$Direction,[string]$RemoteAddress)
   $existing = @(Get-NetFirewallRule -DisplayName $RuleName -ErrorAction SilentlyContinue)
   if (@($existing).Count -gt 0) { return "already_present" }
 
@@ -149,16 +88,43 @@ function Ensure-FirewallRule {
   "applied"
 }
 
-$ScriptSelf = $MyInvocation.MyCommand.Path
-Parse-GateFile -Path $ScriptSelf
+function Add-EnforcementReceipt {
+  param(
+    [System.Collections.ArrayList]$Receipts,
+    [string]$ActionId,
+    [string]$TargetDeviceId,
+    [string]$TargetIp,
+    [string]$ActionType,
+    [string]$Mode,
+    [string]$Result,
+    [string]$Detail,
+    [string]$RuleName
+  )
+
+  $receipt = [ordered]@{
+    schema = "device.enforcement.receipt.v3"
+    action_id = $ActionId
+    target_device_id = $TargetDeviceId
+    target_ip = $TargetIp
+    action_type = $ActionType
+    mode = $Mode
+    result = $Result
+    detail = $Detail
+    rule_name = $RuleName
+    ts_utc = [DateTime]::UtcNow.ToString("o")
+  }
+
+  [void]$Receipts.Add($receipt)
+}
+
+Parse-GateFile -Path $MyInvocation.MyCommand.Path
 
 if (-not (Test-Path -LiteralPath $RepoRoot)) { throw ("REPO_ROOT_MISSING: " + $RepoRoot) }
 if (-not $RunRoot) { $RunRoot = Get-LatestRunRoot -RepoRoot $RepoRoot }
-if (-not (Test-Path -LiteralPath $RunRoot)) { throw ("RUN_ROOT_MISSING: " + $RunRoot) }
 
-$PlanPath        = Join-Path $RunRoot "device.enforcement.plan.v4.json"
+$PlanPath = Join-Path $RunRoot "device.enforcement.plan.v4.json"
 $LiveReceiptPath = Join-Path $RunRoot "device.enforcement.live.receipts.v3.json"
-$ReceiptPath     = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
+$ReceiptPath = Join-Path $RepoRoot "proofs\receipts\shutterwall.ndjson"
 
 $planDoc = Read-JsonFile -Path $PlanPath
 $actions = @($planDoc.actions)
@@ -168,6 +134,58 @@ Write-Host ("MODE: " + $mode) -ForegroundColor Cyan
 Write-Host ("RUN_ROOT: " + $RunRoot) -ForegroundColor Cyan
 Write-Host ("PLAN_PATH: " + $PlanPath) -ForegroundColor Cyan
 Write-Host ("ACTION_COUNT: " + @($actions).Count) -ForegroundColor Yellow
+
+$targetIps = @($actions | ForEach-Object { [string]$_.target_ip } | Where-Object { $_ } | Sort-Object -Unique)
+Write-Host ""
+Write-Host "=== SHUTTERWALL APPLY PREVIEW ===" -ForegroundColor Yellow
+Write-Host ("ACTIONS: " + @($actions).Count) -ForegroundColor Yellow
+Write-Host ("TARGET_IPS: " + ($targetIps -join ", ")) -ForegroundColor Yellow
+Write-Host "WARNING: Apply mode creates Windows Firewall isolation rules." -ForegroundColor Red
+Write-Host "WARNING: This may block device connectivity until restored." -ForegroundColor Red
+Write-Host ""
+
+Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
+  ts_utc = [DateTime]::UtcNow.ToString("o")
+  schema = "shutterwall.receipt.v1"
+  event = "live_enforcement_v3_preview"
+  run_root = $RunRoot
+  plan_path = $PlanPath
+  mode = $mode
+  action_count = @($actions).Count
+  target_ips = @($targetIps)
+})
+
+if ($Apply) {
+  if (-not (Test-IsAdministrator)) { throw "ADMIN_REQUIRED_FOR_APPLY" }
+
+  if (-not $Force) {
+    if (-not [Environment]::UserInteractive) { throw "CONFIRMATION_REQUIRED_NONINTERACTIVE_USE_FORCE" }
+    $resp = Read-Host "Type APPLY to continue"
+    if ($resp -ne "APPLY") {
+      Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
+        ts_utc = [DateTime]::UtcNow.ToString("o")
+        schema = "shutterwall.receipt.v1"
+        event = "apply_cancelled_by_user"
+        run_root = $RunRoot
+        action_count = @($actions).Count
+      })
+      Write-Host "CANCELLED_BY_USER" -ForegroundColor Yellow
+      return
+    }
+  }
+
+  Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
+    ts_utc = [DateTime]::UtcNow.ToString("o")
+    schema = "shutterwall.receipt.v1"
+    event = "apply_confirmed_by_user"
+    run_root = $RunRoot
+    action_count = @($actions).Count
+    force_mode = [bool]$Force
+  })
+}
+else {
+  Write-Host "WHATIF MODE: No changes will be applied." -ForegroundColor Cyan
+}
 
 Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
   ts_utc = [DateTime]::UtcNow.ToString("o")
@@ -179,8 +197,6 @@ Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
   action_count = @($actions).Count
 })
 
-if ($Apply -and -not (Test-IsAdministrator)) { throw "ADMIN_REQUIRED_FOR_APPLY" }
-
 $liveReceipts = New-Object System.Collections.ArrayList
 
 foreach ($action in $actions) {
@@ -191,48 +207,40 @@ foreach ($action in $actions) {
 
   Write-Host ("PROCESS_ACTION: " + $actionId + " :: " + $actionType + " :: " + $targetIp) -ForegroundColor DarkCyan
 
-  if ([string]::IsNullOrWhiteSpace($targetIp)) {
-    Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result "skipped" -Detail "Target IP missing; no live action performed." -RuleName ""
-    continue
-  }
-
+  $supportsIsolation = $false
   $outRule = ""
   $inRule = ""
-  $whatIfDetail = ""
-  $supportsIsolation = $false
+  $detail = ""
 
   switch ($actionType) {
-    "plan_block_internet_egress" {
+    "plan_quarantine_device" {
       $supportsIsolation = $true
-      $outRule = "ShutterWall V3 Block Out " + $targetIp
-      $whatIfDetail = "Would create outbound firewall block rule for target IP."
+      $outRule = "ShutterWall V3 Quarantine Out " + $targetIp
+      $inRule  = "ShutterWall V3 Quarantine In " + $targetIp
+      $detail = "Paired inbound and outbound quarantine firewall rules."
     }
     "plan_confirmed_camera_isolation_review" {
       $supportsIsolation = $true
       $outRule = "ShutterWall V3 Confirmed Cam Out " + $targetIp
       $inRule  = "ShutterWall V3 Confirmed Cam In " + $targetIp
-      $whatIfDetail = "Would create paired outbound and inbound firewall block rules for confirmed camera isolation."
+      $detail = "Paired inbound and outbound confirmed camera firewall rules."
+    }
+    "plan_block_internet_egress" {
+      $supportsIsolation = $true
+      $outRule = "ShutterWall V3 Block Out " + $targetIp
+      $detail = "Outbound firewall block rule."
     }
     "plan_restrict_admin_surface" {
       $supportsIsolation = $true
       $outRule = "ShutterWall V3 Restrict Admin Out " + $targetIp
       $inRule  = "ShutterWall V3 Restrict Admin In " + $targetIp
-      $whatIfDetail = "Would create paired firewall block rules for admin surface restriction."
+      $detail = "Paired firewall rules for admin surface restriction."
     }
     "plan_restrict_stream_access" {
       $supportsIsolation = $true
       $outRule = "ShutterWall V3 Restrict Stream Out " + $targetIp
       $inRule  = "ShutterWall V3 Restrict Stream In " + $targetIp
-      $whatIfDetail = "Would create paired firewall block rules for stream restriction."
-    }
-    "plan_quarantine_device" {
-      $supportsIsolation = $true
-      $outRule = "ShutterWall V3 Quarantine Out " + $targetIp
-      $inRule  = "ShutterWall V3 Quarantine In " + $targetIp
-      $whatIfDetail = "Would create paired inbound and outbound quarantine firewall rules."
-    }
-    "plan_monitor_only" {
-      $supportsIsolation = $false
+      $detail = "Paired firewall rules for stream restriction."
     }
     default {
       $supportsIsolation = $false
@@ -240,13 +248,14 @@ foreach ($action in $actions) {
   }
 
   if (-not $supportsIsolation) {
-    Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result "skipped" -Detail "Action type not mapped to true isolation in v3." -RuleName ""
+    Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result "skipped" -Detail "Action type not mapped to live isolation." -RuleName ""
     continue
   }
 
+  $ruleBundle = if ($inRule) { $outRule + " | " + $inRule } else { $outRule }
+
   if ($WhatIf) {
-    $ruleBundle = if ($inRule) { $outRule + " | " + $inRule } else { $outRule }
-    Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result "planned" -Detail $whatIfDetail -RuleName $ruleBundle
+    Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result "planned" -Detail ("Would apply: " + $detail) -RuleName $ruleBundle
     continue
   }
 
@@ -254,11 +263,8 @@ foreach ($action in $actions) {
   if ($outRule) { $results += Ensure-FirewallRule -RuleName $outRule -Direction Outbound -RemoteAddress $targetIp }
   if ($inRule)  { $results += Ensure-FirewallRule -RuleName $inRule  -Direction Inbound  -RemoteAddress $targetIp }
 
-  $finalResult = if (@($results | Where-Object { $_ -eq "applied" }).Count -gt 0) { "applied" } else { "already_present" }
-  $ruleBundle = if ($inRule) { $outRule + " | " + $inRule } else { $outRule }
-  $detail = if ($finalResult -eq "applied") { "Created live isolation firewall rules." } else { "Live isolation firewall rules already existed." }
-
-  Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result $finalResult -Detail $detail -RuleName $ruleBundle
+  $final = if (@($results | Where-Object { $_ -eq "applied" }).Count -gt 0) { "applied" } else { "already_present" }
+  Add-EnforcementReceipt -Receipts $liveReceipts -ActionId $actionId -TargetDeviceId $targetDeviceId -TargetIp $targetIp -ActionType $actionType -Mode $mode -Result $final -Detail $detail -RuleName $ruleBundle
 }
 
 $receipts = @($liveReceipts)
