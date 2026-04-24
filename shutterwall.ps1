@@ -87,6 +87,33 @@ switch ($Command) {
     return
   }
 
+  "protect" {
+    $latest = Get-LatestRunRoot -RepoRoot $RepoRoot
+
+    Write-Host "SHUTTERWALL PROTECT" -ForegroundColor Cyan
+    Write-Host "Step 1/3: Analyze devices..." -ForegroundColor Cyan
+
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_risk_evaluate_v2.ps1") `
+      -RepoRoot $RepoRoot -RunRoot $latest
+
+    Write-Host "Step 2/3: Build protection plan..." -ForegroundColor Cyan
+
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enforcement_plan_v4.ps1") `
+      -RepoRoot $RepoRoot -RunRoot $latest -PolicyProfile enterprise_strict
+
+    Write-Host "Step 3/3: Preview protection actions..." -ForegroundColor Cyan
+
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_live_enforcement_v3.ps1") `
+      -RepoRoot $RepoRoot -RunRoot $latest -WhatIf
+
+    Write-Host ""
+    Write-Host "To apply these protections, run an elevated PowerShell and use:" -ForegroundColor Yellow
+    Write-Host "  shutterwall secure-force" -ForegroundColor Yellow
+    Write-Host "To undo ShutterWall firewall rules later, use:" -ForegroundColor Yellow
+    Write-Host "  shutterwall restore" -ForegroundColor Yellow
+    Write-Host "SHUTTERWALL_PROTECT_OK" -ForegroundColor Green
+    return
+  }
   default {
     Write-Host "UNKNOWN_COMMAND"
     return
