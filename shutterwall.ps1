@@ -75,6 +75,18 @@ switch ($Command) {
     return
   }
 
+  "restore" {
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_restore_v1.ps1") `
+      -RepoRoot $RepoRoot
+    return
+  }
+
+  "restore-force" {
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_restore_v1.ps1") `
+      -RepoRoot $RepoRoot -Force
+    return
+  }
+
   default {
     Write-Host "UNKNOWN_COMMAND"
     return
