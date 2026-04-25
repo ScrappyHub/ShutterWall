@@ -5,6 +5,9 @@ ShutterWall Camera CLI v0.1.0
 Safe first command:
   shutterwall protect
 
+If that command is not recognized immediately after install, either open a new PowerShell window or run:
+  C:\Users\<you>\bin\shutterwall.cmd protect
+
 What it does:
   - analyzes local camera-class / surveillance-risk devices
   - previews protection actions
@@ -20,6 +23,10 @@ Recommended flow:
   5. Open PowerShell as Administrator
   6. Run: shutterwall secure-force
   7. If needed, run: shutterwall restore
+
+Admin fallback commands:
+  C:\Users\<you>\bin\shutterwall.cmd secure-force
+  C:\Users\<you>\bin\shutterwall.cmd restore
 
 Commands:
   shutterwall version

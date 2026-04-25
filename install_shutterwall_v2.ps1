@@ -62,3 +62,4 @@ Write-Host "  shutterwall secure-force   # requires Administrator PowerShell"
 Write-Host "  shutterwall restore        # requires Administrator PowerShell"
 Write-Host ""
 Write-Host "If this terminal does not recognize shutterwall, open a new PowerShell window." -ForegroundColor Yellow
+Write-Host ("Direct fallback: " + $ShimPath + " protect") -ForegroundColor Yellow
