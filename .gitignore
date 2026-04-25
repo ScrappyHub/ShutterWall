@@ -7,4 +7,4 @@ scripts/_scratch/
 # Editor / system
 .vscode/
 *.log
-*.tmp
+*.tmprelease/
