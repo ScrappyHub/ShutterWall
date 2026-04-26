@@ -3,39 +3,38 @@
 ShutterWall Camera CLI v0.1.0
 
 Safe first command:
-  shutterwall protect
+  shutterwall scan
 
-If that command is not recognized immediately after install, either open a new PowerShell window or run:
-  C:\Users\<you>\bin\shutterwall.cmd protect
+Policy tiers:
+  home_safe: low findings stay monitor/preview-first
+  smallbiz_balanced: stronger review posture for small businesses
+  enterprise_strict: aggressive quarantine planning for unmanaged/weakly understood devices
 
-What it does:
-  - analyzes local camera-class / surveillance-risk devices
-  - previews protection actions
-  - applies firewall isolation only through explicit apply
-  - restores ShutterWall firewall rules
-  - writes receipts and proof outputs
+Recommended home flow:
+  1. shutterwall doctor
+  2. shutterwall scan
+  3. Review target IPs and warnings
+  4. Open PowerShell as Administrator
+  5. shutterwall apply
+  6. If needed: shutterwall undo
 
-Recommended flow:
-  1. Open PowerShell
-  2. Run: shutterwall doctor
-  3. Run: shutterwall protect
-  4. Review the target IPs and warnings
-  5. Open PowerShell as Administrator
-  6. Run: shutterwall secure-force
-  7. If needed, run: shutterwall restore
+Business flow:
+  1. shutterwall scan-business
+  2. Administrator: shutterwall apply-business
+  3. If needed: shutterwall undo
 
-Admin fallback commands:
-  C:\Users\<you>\bin\shutterwall.cmd secure-force
-  C:\Users\<you>\bin\shutterwall.cmd restore
+Enterprise strict flow:
+  1. shutterwall scan-enterprise
+  2. Administrator: shutterwall apply-enterprise
+  3. If needed: shutterwall undo
 
-Commands:
-  shutterwall version
-  shutterwall doctor
-  shutterwall protect
-  shutterwall secure-low
-  shutterwall secure-enterprise
-  shutterwall secure-force
-  shutterwall restore
+Compatibility aliases:
+  shutterwall protect = shutterwall scan
+  shutterwall secure-force = shutterwall apply-enterprise
+  shutterwall restore = shutterwall undo
+
+Direct fallback if PATH has not refreshed:
+  C:\Users\<you>\bin\shutterwall.cmd scan
 
 Quality check:
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\shutterwall\scripts\_RUN_shutterwall_full_green_v1.ps1 -RepoRoot C:\dev\shutterwall
@@ -47,4 +46,4 @@ Safety notes:
   - Do not run this on networks you do not own or manage.
   - Preview is safe.
   - Apply can block device connectivity.
-  - Restore removes ShutterWall-created firewall rules.
+  - Restore/undo removes ShutterWall-created firewall rules.
