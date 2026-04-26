@@ -3,6 +3,9 @@
 ShutterWall Camera CLI v0.1.0
 
 Safe first command:
+  shutterwall inspect
+
+Then preview:
   shutterwall scan
 
 Policy tiers:

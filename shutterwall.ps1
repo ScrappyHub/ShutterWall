@@ -15,6 +15,12 @@ function Get-LatestRunRoot {
   return $runs[0].FullName
 }
 
+function Invoke-Inspect {
+  Write-Host "SHUTTERWALL INSPECT" -ForegroundColor Cyan
+  Write-Host "Safe inspection only. No protection plan. No firewall changes." -ForegroundColor Yellow
+  & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_discovery_fingerprint_v3.ps1") -RepoRoot $RepoRoot -StartHost 1 -EndHost 40 -ConnectTimeoutMs 100
+  Write-Host "SHUTTERWALL_INSPECT_OK" -ForegroundColor Green
+}
 function Invoke-ProtectionPreview {
   param([string]$PolicyProfile)
   $latest = Get-LatestRunRoot -RepoRoot $RepoRoot
@@ -51,6 +57,7 @@ function Invoke-Restore {
 switch ($Command) {
   "help" {
     Write-Host "ShutterWall commands:"
+    Write-Host "  shutterwall inspect           # safe discovery/fingerprint only"
     Write-Host "  shutterwall scan              # home-safe preview"
     Write-Host "  shutterwall scan-business     # small business preview"
     Write-Host "  shutterwall scan-enterprise   # enterprise strict preview"
@@ -72,6 +79,7 @@ switch ($Command) {
     Write-Host "SHUTTERWALL_DOCTOR_OK"
     return
   }
+  "inspect" { Invoke-Inspect; return }
   "scan" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "protect" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "secure-low" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
