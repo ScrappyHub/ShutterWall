@@ -51,6 +51,32 @@ function Get-FingerprintKey {
   return ""
 }
 
+function Compare-FlatObjectFields {
+  param($Before,$After)
+
+  $changes = New-Object System.Collections.ArrayList
+  $names = New-Object System.Collections.ArrayList
+
+  foreach($p in $Before.PSObject.Properties){ [void]$names.Add([string]$p.Name) }
+  foreach($p in $After.PSObject.Properties){ if(-not @($names).Contains([string]$p.Name)){ [void]$names.Add([string]$p.Name) } }
+
+  foreach($name in @($names | Sort-Object)){
+    if($name -eq "device_id"){ continue }
+    $beforeValue = ""
+    $afterValue = ""
+    if($Before.PSObject.Properties[$name]){ $beforeValue = [string]$Before.PSObject.Properties[$name].Value }
+    if($After.PSObject.Properties[$name]){ $afterValue = [string]$After.PSObject.Properties[$name].Value }
+    if($beforeValue -ne $afterValue){
+      [void]$changes.Add([ordered]@{
+        field = $name
+        before = $beforeValue
+        after = $afterValue
+      })
+    }
+  }
+
+  return @($changes)
+}
 function StableJson {
   param($Object)
   (($Object | ConvertTo-Json -Depth 30) -replace "`r`n","`n") -replace "`r","`n"
@@ -113,7 +139,13 @@ foreach($k in @($currentFpMap.Keys | Sort-Object)){
     if($baselineFpMap[$k] -ne $currentFpMap[$k]){
       $ip = ""
       if($currentDeviceMap.ContainsKey($k)){ $ip = [string]$currentDeviceMap[$k].ip }
-      [void]$alerts.Add([ordered]@{ token="ALERT_FINGERPRINT_CHANGED"; key=$k; ip=$ip; message="Device fingerprint changed from baseline." })
+      $baselineFpObj = $null
+      $currentFpObj = $null
+      foreach($bf in $baselineFingerprints){ if((Get-FingerprintKey $bf) -eq $k){ $baselineFpObj = $bf; break } }
+      foreach($cf in $currentFingerprints){ if((Get-FingerprintKey $cf) -eq $k){ $currentFpObj = $cf; break } }
+      $fieldChanges = @()
+      if($baselineFpObj -and $currentFpObj){ $fieldChanges = @(Compare-FlatObjectFields -Before $baselineFpObj -After $currentFpObj) }
+      [void]$alerts.Add([ordered]@{ token="ALERT_FINGERPRINT_CHANGED"; key=$k; ip=$ip; message="Device fingerprint changed from baseline."; changes=@($fieldChanges) })
     }
   }
 }
@@ -152,5 +184,12 @@ Write-Host ("BASELINE_DEVICES: " + @($baselineDevices).Count) -ForegroundColor Y
 Write-Host ("CURRENT_DEVICES: " + @($currentDevices).Count) -ForegroundColor Yellow
 Write-Host ("ALERT_COUNT: " + @($alerts).Count) -ForegroundColor Yellow
 Write-Host $state -ForegroundColor Green
-foreach($a in @($alerts)){ Write-Host (($a.token) + " :: " + ($a.ip) + " :: " + ($a.message)) -ForegroundColor Yellow }
+foreach($a in @($alerts)){
+  Write-Host (($a.token) + " :: " + ($a.ip) + " :: " + ($a.message)) -ForegroundColor Yellow
+  if($a.PSObject.Properties["changes"]){
+    foreach($c in @($a.changes)){
+      Write-Host ("  CHANGE_FIELD: " + $c.field + " :: BEFORE=[" + $c.before + "] :: AFTER=[" + $c.after + "]") -ForegroundColor DarkYellow
+    }
+  }
+}
 Write-Host "SHUTTERWALL_DIFF_V1_OK" -ForegroundColor Green
