@@ -6,6 +6,7 @@ Safe first command:
 Monitoring:
   shutterwall inspect
   shutterwall baseline
+  shutterwall diff
   shutterwall watch 3
 
 Preview/apply/undo:

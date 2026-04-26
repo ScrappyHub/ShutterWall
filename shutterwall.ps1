@@ -93,6 +93,7 @@ switch ($Command) {
     Write-Host "  shutterwall inspect           # safe discovery/fingerprint only"
     Write-Host "  shutterwall watch [count]     # repeated safe device snapshots"
     Write-Host "  shutterwall baseline          # create trusted network baseline"
+    Write-Host "  shutterwall diff              # compare current network to baseline"
     Write-Host "  shutterwall scan              # home-safe preview"
     Write-Host "  shutterwall scan-business     # small business preview"
     Write-Host "  shutterwall scan-enterprise   # enterprise strict preview"
@@ -110,6 +111,7 @@ switch ($Command) {
   "inspect" { Invoke-Inspect; return }
   "watch" { Invoke-Watch; return }
   "baseline" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_baseline_v1.ps1") -RepoRoot $RepoRoot; return }
+  "diff" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1") -RepoRoot $RepoRoot; return }
   "scan" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "protect" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "secure-low" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
