@@ -32,15 +32,22 @@ function Append-NdjsonLine {
 
 function Get-DeviceKey {
   param($Device)
-  if($Device.device_id){ return [string]$Device.device_id }
-  if($Device.ip){ return [string]$Device.ip }
+
+  # Identity normalization v1:
+  # Prefer IP because current device_id can be generated differently between runs.
+  # Later versions can prefer stable MAC/hostname/vendor tuples when available.
+  if($Device.ip){ return ("ip:" + [string]$Device.ip) }
+  if($Device.device_id){ return ("device_id:" + [string]$Device.device_id) }
   return ""
 }
 
 function Get-FingerprintKey {
   param($Fingerprint)
-  if($Fingerprint.device_id){ return [string]$Fingerprint.device_id }
-  if($Fingerprint.ip){ return [string]$Fingerprint.ip }
+
+  # Identity normalization v1:
+  # Prefer IP so baseline/diff does not false-alert when generated IDs drift.
+  if($Fingerprint.ip){ return ("ip:" + [string]$Fingerprint.ip) }
+  if($Fingerprint.device_id){ return ("device_id:" + [string]$Fingerprint.device_id) }
   return ""
 }
 
