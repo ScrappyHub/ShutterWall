@@ -94,6 +94,7 @@ switch ($Command) {
     Write-Host "  shutterwall watch [count]     # repeated safe device snapshots"
     Write-Host "  shutterwall baseline          # create trusted network baseline"
     Write-Host "  shutterwall diff              # compare current network to baseline"
+    Write-Host "  shutterwall identity          # label devices with type/confidence hints"
     Write-Host "  shutterwall scan              # home-safe preview"
     Write-Host "  shutterwall scan-business     # small business preview"
     Write-Host "  shutterwall scan-enterprise   # enterprise strict preview"
@@ -112,6 +113,7 @@ switch ($Command) {
   "watch" { Invoke-Watch; return }
   "baseline" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_baseline_v1.ps1") -RepoRoot $RepoRoot; return }
   "diff" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1") -RepoRoot $RepoRoot; return }
+  "identity" { $latest = Get-LatestRunRoot -RepoRoot $RepoRoot; & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_identity_v1.ps1") -RepoRoot $RepoRoot -RunRoot $latest; return }
   "scan" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "protect" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "secure-low" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
@@ -125,3 +127,4 @@ switch ($Command) {
   "restore" { Invoke-Restore; return }
   default { Write-Host "UNKNOWN_COMMAND"; Write-Host "Run: shutterwall help"; return }
 }
+

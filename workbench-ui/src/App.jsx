@@ -7,6 +7,7 @@ const actions = [
   { cmd: "inspect", title: "Inspect", desc: "Safe discovery only. No firewall changes." },
   { cmd: "baseline", title: "Baseline", desc: "Create trusted network baseline." },
   { cmd: "diff", title: "Diff", desc: "Compare current network to baseline." },
+  { cmd: "identity", title: "Identity", desc: "Name devices with confidence hints." },
   { cmd: "watch 1", title: "Watch", desc: "Run one monitoring tick." },
   { cmd: "scan", title: "Scan", desc: "Home-safe protection preview." },
 ];
@@ -111,3 +112,4 @@ export default function App() {
     </main>
   );
 }
+

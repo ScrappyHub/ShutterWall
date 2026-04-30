@@ -95,3 +95,10 @@ button {
 .output {
   min-height: 360px;
 }
+.identity-card {
+  background:#111827;
+  border:1px solid #34507a;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+}
