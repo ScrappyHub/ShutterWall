@@ -15,6 +15,19 @@ const actions = [
 function parseOutput(text) {
   const lines = String(text || "").split(/\\r?\\n/);
   const alerts = lines.filter((line) => line.startsWith("ALERT_") && !line.startsWith("ALERT_COUNT"));
+  const identities = lines
+    .filter((line) => line.startsWith("DEVICE_IDENTITY ::"))
+    .map((line) => {
+      const parts = line.split("::").map((p) => p.trim());
+      const ip = parts[1] || "";
+      const label = parts[2] || "Unknown Device";
+      const confidencePart = parts[3] || "";
+      const vendorPart = parts[4] || "";
+      const confidence = confidencePart.replace("confidence=", "");
+      const vendor = vendorPart.replace("vendor=", "");
+      return { ip, label, confidence, vendor };
+    });
+
   const stable = lines.some((line) => line.trim() === "NETWORK_STATE_STABLE");
   const changed = lines.some((line) => line.trim() === "NETWORK_STATE_CHANGED");
   const ok = lines.some((line) => line.includes("_OK"));
@@ -22,6 +35,7 @@ function parseOutput(text) {
   return {
     state: changed ? "changed" : stable ? "stable" : ok ? "ok" : "idle",
     alerts,
+    identities,
   };
 }
 
@@ -42,6 +56,19 @@ function AlertCard({ alert }) {
       <strong>{label}</strong>
       {ip ? <span>{ip}</span> : null}
       {message ? <p>{message}</p> : null}
+    </div>
+  );
+}
+
+function IdentityCard({ device }) {
+  return (
+    <div className="identity-card">
+      <strong>{device.label}</strong>
+      <span className="identity-ip">{device.ip}</span>
+      <div className="identity-meta">
+        <span>Confidence: {device.confidence || "unknown"}</span>
+        <span>Vendor: {device.vendor || "unknown"}</span>
+      </div>
     </div>
   );
 }
@@ -83,7 +110,7 @@ export default function App() {
         </div>
         <div className="state-card safe">
           <strong>Safe Commands</strong>
-          <span>Inspect, baseline, diff, watch, and scan do not apply firewall changes.</span>
+          <span>Inspect, baseline, diff, identity, watch, and scan do not apply firewall changes.</span>
         </div>
         <div className="state-card locked">
           <strong>Protected Apply</strong>
@@ -94,6 +121,18 @@ export default function App() {
       {parsed.alerts.length > 0 ? (
         <section className="alerts">
           {parsed.alerts.map((alert, index) => <AlertCard key={index} alert={alert} />)}
+        </section>
+      ) : null}
+
+      {parsed.identities.length > 0 ? (
+        <section className="devices-section">
+          <div className="section-title">
+            <strong>Detected Devices</strong>
+            <span>{parsed.identities.length} device(s)</span>
+          </div>
+          <div className="devices-grid">
+            {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
+          </div>
         </section>
       ) : null}
 
@@ -112,4 +151,3 @@ export default function App() {
     </main>
   );
 }
-

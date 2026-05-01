@@ -102,3 +102,61 @@ button {
   padding:16px;
   margin-bottom:12px;
 }
+
+.devices-section {
+  background:#101827;
+  border:1px solid #263044;
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.section-title {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.section-title strong {
+  color:#ffffff;
+  font-size:18px;
+}
+
+.section-title span {
+  color:#9eb8ff;
+}
+
+.devices-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
+}
+
+.identity-card {
+  background:#0b1220;
+  border:1px solid #34507a;
+  border-radius:16px;
+  padding:16px;
+}
+
+.identity-card strong {
+  display:block;
+  color:#ffffff;
+  margin-bottom:8px;
+}
+
+.identity-ip {
+  display:block;
+  color:#8fb3ff;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.identity-meta {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:#d5e0f3;
+  font-size:13px;
+}
