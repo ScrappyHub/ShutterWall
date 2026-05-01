@@ -16,9 +16,9 @@ function parseOutput(text) {
   const lines = String(text || "").split(/\\r?\\n/);
   const alerts = lines.filter((line) => line.startsWith("ALERT_") && !line.startsWith("ALERT_COUNT"));
   const identities = lines
-    .filter((line) => line.startsWith("DEVICE_IDENTITY ::"))
+    .filter((line) => line.trim().startsWith("DEVICE_IDENTITY ::"))
     .map((line) => {
-      const parts = line.split("::").map((p) => p.trim());
+      const parts = line.trim().split("::").map((p) => p.trim());
       const ip = parts[1] || "";
       const label = parts[2] || "Unknown Device";
       const confidencePart = parts[3] || "";
@@ -145,9 +145,22 @@ export default function App() {
         ))}
       </section>
 
+      {parsed.identities.length > 0 ? (
+        <section className="devices-section">
+          <div className="section-title">
+            <strong>Detected Devices</strong>
+            <span>{parsed.identities.length} device(s)</span>
+          </div>
+          <div className="devices-grid">
+            {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
+          </div>
+        </section>
+      ) : null}
+
       <section className="warning">Apply and undo are intentionally not exposed as one-click buttons yet. Use elevated PowerShell and run shutterwall apply or shutterwall undo.</section>
       <section className="commandbar"><strong>Status:</strong> {running ? "Running..." : "Ready"} {lastCommand ? <span>Last command: {lastCommand}</span> : null}</section>
       <pre className="output">{output}</pre>
     </main>
   );
 }
+
