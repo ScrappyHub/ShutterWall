@@ -79,6 +79,7 @@ export default function App() {
   const [output, setOutput] = useState("Ready. Choose an action.");
   const [running, setRunning] = useState(false);
   const [lastCommand, setLastCommand] = useState("");
+  const [showRaw, setShowRaw] = useState(false);
 
   const parsed = useMemo(() => parseOutput(output), [output]);
 
@@ -156,7 +157,14 @@ export default function App() {
         {lastCommand ? <span>Last command: {lastCommand}</span> : null}
       </section>
 
-      <pre className="output">{output}</pre>
+      <section className="raw-toggle">
+        <button type="button" onClick={() => setShowRaw(!showRaw)}>
+          {showRaw ? "Hide Raw Output" : "Show Raw Output"}
+        </button>
+      </section>
+
+      {showRaw ? <pre className="output">{output}</pre> : null}
     </main>
   );
 }
+
