@@ -13,18 +13,20 @@ const actions = [
 ];
 
 function parseOutput(text) {
-  const lines = String(text || "").split(/\\r?\\n/);
-  const alerts = lines.filter((line) => line.startsWith("ALERT_") && !line.startsWith("ALERT_COUNT"));
+  const lines = String(text || "").split(/\r?\n/);
+
+  const alerts = lines.filter((line) =>
+    line.trim().startsWith("ALERT_") && !line.trim().startsWith("ALERT_COUNT")
+  );
+
   const identities = lines
     .filter((line) => line.trim().startsWith("DEVICE_IDENTITY ::"))
     .map((line) => {
       const parts = line.trim().split("::").map((p) => p.trim());
       const ip = parts[1] || "";
       const label = parts[2] || "Unknown Device";
-      const confidencePart = parts[3] || "";
-      const vendorPart = parts[4] || "";
-      const confidence = confidencePart.replace("confidence=", "");
-      const vendor = vendorPart.replace("vendor=", "");
+      const confidence = (parts[3] || "").replace("confidence=", "");
+      const vendor = (parts[4] || "").replace("vendor=", "");
       return { ip, label, confidence, vendor };
     });
 
@@ -83,13 +85,13 @@ export default function App() {
   async function run(cmd) {
     setRunning(true);
     setLastCommand("shutterwall " + cmd);
-    setOutput("RUNNING: shutterwall " + cmd + "\\n");
+    setOutput("RUNNING: shutterwall " + cmd + "\n");
 
     try {
       const result = await invoke("run_shutterwall", { cmd });
       setOutput(String(result || "NO_OUTPUT"));
     } catch (err) {
-      setOutput("UI_COMMAND_FAILED:\\n" + String(err));
+      setOutput("UI_COMMAND_FAILED:\n" + String(err));
     } finally {
       setRunning(false);
     }
@@ -118,13 +120,13 @@ export default function App() {
         </div>
       </section>
 
-      {parsed.alerts.length > 0 ? (
+      {parsed.alerts.length > 0 && (
         <section className="alerts">
           {parsed.alerts.map((alert, index) => <AlertCard key={index} alert={alert} />)}
         </section>
-      ) : null}
+      )}
 
-      {parsed.identities.length > 0 ? (
+      {parsed.identities.length > 0 && (
         <section className="devices-section">
           <div className="section-title">
             <strong>Detected Devices</strong>
@@ -134,7 +136,7 @@ export default function App() {
             {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
           </div>
         </section>
-      ) : null}
+      )}
 
       <section className="grid">
         {actions.map((a) => (
@@ -145,22 +147,16 @@ export default function App() {
         ))}
       </section>
 
-      {parsed.identities.length > 0 ? (
-        <section className="devices-section">
-          <div className="section-title">
-            <strong>Detected Devices</strong>
-            <span>{parsed.identities.length} device(s)</span>
-          </div>
-          <div className="devices-grid">
-            {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
-          </div>
-        </section>
-      ) : null}
+      <section className="warning">
+        Apply and undo are intentionally not exposed as one-click buttons yet. Use elevated PowerShell and run shutterwall apply or shutterwall undo.
+      </section>
 
-      <section className="warning">Apply and undo are intentionally not exposed as one-click buttons yet. Use elevated PowerShell and run shutterwall apply or shutterwall undo.</section>
-      <section className="commandbar"><strong>Status:</strong> {running ? "Running..." : "Ready"} {lastCommand ? <span>Last command: {lastCommand}</span> : null}</section>
+      <section className="commandbar">
+        <strong>Status:</strong> {running ? "Running..." : "Ready"}
+        {lastCommand ? <span>Last command: {lastCommand}</span> : null}
+      </section>
+
       <pre className="output">{output}</pre>
     </main>
   );
 }
-
