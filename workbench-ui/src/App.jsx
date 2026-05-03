@@ -2,14 +2,32 @@ import { useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
-const actions = [
-  { cmd: "quickstart", title: "Quickstart", desc: "Guided inspect plus home-safe scan." },
-  { cmd: "inspect", title: "Inspect", desc: "Safe discovery only. No firewall changes." },
-  { cmd: "baseline", title: "Baseline", desc: "Create trusted network baseline." },
-  { cmd: "diff", title: "Diff", desc: "Compare current network to baseline." },
-  { cmd: "identity", title: "Identity", desc: "Name devices with confidence hints." },
-  { cmd: "watch 1", title: "Watch", desc: "Run one monitoring tick." },
-  { cmd: "scan", title: "Scan", desc: "Home-safe protection preview." },
+const sections = [
+  {
+    title: "Overview",
+    desc: "Start here. Understand what is on your local network without changing anything.",
+    actions: [
+      { cmd: "quickstart", title: "Quickstart", desc: "Runs safe discovery and a home-safe preview so you can understand the current network state." },
+      { cmd: "inspect", title: "Inspect", desc: "Discovers local devices and writes evidence. No firewall changes. No enforcement." },
+      { cmd: "identity", title: "Identity", desc: "Labels discovered devices with likely type, confidence, vendor hint, and IP address." },
+    ],
+  },
+  {
+    title: "Security",
+    desc: "Create a trusted baseline, compare against it, and monitor for changes.",
+    actions: [
+      { cmd: "baseline", title: "Baseline", desc: "Stores the current network as the trusted known-good state." },
+      { cmd: "diff", title: "Diff", desc: "Compares the current network against the baseline and reports new, missing, or changed devices." },
+      { cmd: "watch 1", title: "Watch", desc: "Runs a monitoring tick using baseline + diff and reports whether the network changed." },
+    ],
+  },
+  {
+    title: "Enforce",
+    desc: "Preview protections first. Actual apply and undo remain administrator-gated for safety.",
+    actions: [
+      { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan and shows target devices. No firewall changes are applied." },
+    ],
+  },
 ];
 
 function parseOutput(text) {
@@ -50,22 +68,17 @@ function parseOutput(text) {
 
   let stateLabel = "Ready";
 
-  if (lines.some(l => l.includes("SHUTTERWALL_IDENTITY_V1_OK"))) {
+  if (lines.some((l) => l.includes("SHUTTERWALL_IDENTITY_V1_OK"))) {
     stateLabel = "Devices Identified";
-  }
-  else if (lines.some(l => l.includes("SHUTTERWALL_BASELINE_V1_OK"))) {
+  } else if (lines.some((l) => l.includes("SHUTTERWALL_BASELINE_V1_OK"))) {
     stateLabel = "Baseline Updated";
-  }
-  else if (lines.some(l => l.includes("SHUTTERWALL_PROTECT_OK"))) {
+  } else if (lines.some((l) => l.includes("SHUTTERWALL_PROTECT_OK"))) {
     stateLabel = "Scan Preview Ready";
-  }
-  else if (changed) {
+  } else if (changed) {
     stateLabel = "Network Changed";
-  }
-  else if (stable) {
+  } else if (stable) {
     stateLabel = "Network Stable";
-  }
-  else if (ok) {
+  } else if (ok) {
     stateLabel = "Command Complete";
   }
 
@@ -150,11 +163,11 @@ export default function App() {
         </div>
         <div className="state-card safe">
           <strong>Safe Commands</strong>
-          <span>Inspect, baseline, diff, identity, watch, and scan do not apply firewall changes.</span>
+          <span>Overview and Security commands are safe by default and do not apply firewall changes.</span>
         </div>
         <div className="state-card locked">
-          <strong>Protected Apply</strong>
-          <span>Apply and undo stay admin-gated through the CLI.</span>
+          <strong>Protected Enforcement</strong>
+          <span>Apply and undo stay administrator-gated so changes are intentional.</span>
         </div>
       </section>
 
@@ -176,17 +189,28 @@ export default function App() {
         </section>
       )}
 
-      <section className="grid">
-        {actions.map((a) => (
-          <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
-            <strong>{a.title}</strong>
-            <span>{a.desc}</span>
-          </button>
+      <section className="sections">
+        {sections.map((section) => (
+          <div className="command-section" key={section.title}>
+            <div className="section-heading">
+              <strong>{section.title}</strong>
+              <p>{section.desc}</p>
+            </div>
+            <div className="section-actions">
+              {section.actions.map((a) => (
+                <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
+                  <strong>{a.title}</strong>
+                  <span>{a.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </section>
 
-      <section className="warning">
-        Apply and undo are intentionally not exposed as one-click buttons yet. Use elevated PowerShell and run shutterwall apply or shutterwall undo.
+      <section className="enforce-note">
+        <strong>Apply / Undo</strong>
+        <span>Protection apply and restore are available through elevated PowerShell: <code>shutterwall apply</code> and <code>shutterwall undo</code>. They are intentionally not exposed as casual one-click actions yet.</span>
       </section>
 
       <section className="commandbar">
@@ -211,6 +235,3 @@ export default function App() {
     </main>
   );
 }
-
-
-
