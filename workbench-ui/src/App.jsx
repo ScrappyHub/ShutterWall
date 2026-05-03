@@ -30,6 +30,20 @@ function parseOutput(text) {
       return { ip, label, confidence, vendor };
     });
 
+  const summaryLines = lines.filter((line) =>
+    line.startsWith("BASELINE_PATH:") ||
+    line.startsWith("BASELINE_HASH:") ||
+    line.startsWith("DEVICE_COUNT:") ||
+    line.startsWith("FINGERPRINT_COUNT:") ||
+    line.startsWith("CANDIDATE_HOSTS:") ||
+    line.startsWith("FINDING_COUNT:") ||
+    line.startsWith("ACTION_COUNT:") ||
+    line.startsWith("TARGET_IPS:") ||
+    line.startsWith("WATCH_TICK_STATE:") ||
+    line.startsWith("WATCH_TICK_ALERTS:") ||
+    line.endsWith("_OK")
+  );
+
   const stable = lines.some((line) => line.trim() === "NETWORK_STATE_STABLE");
   const changed = lines.some((line) => line.trim() === "NETWORK_STATE_CHANGED");
   const ok = lines.some((line) => line.includes("_OK"));
@@ -38,6 +52,7 @@ function parseOutput(text) {
     state: changed ? "changed" : stable ? "stable" : ok ? "ok" : "idle",
     alerts,
     identities,
+    summaryLines,
   };
 }
 
@@ -157,6 +172,13 @@ export default function App() {
         {lastCommand ? <span>Last command: {lastCommand}</span> : null}
       </section>
 
+      {parsed.summaryLines.length > 0 ? (
+        <section className="friendly-summary">
+          <strong>Command Summary</strong>
+          {parsed.summaryLines.map((line, index) => <span key={index}>{line}</span>)}
+        </section>
+      ) : null}
+
       <section className="raw-toggle">
         <button type="button" onClick={() => setShowRaw(!showRaw)}>
           {showRaw ? "Hide Raw Output" : "Show Raw Output"}
@@ -167,4 +189,5 @@ export default function App() {
     </main>
   );
 }
+
 

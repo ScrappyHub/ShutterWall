@@ -176,3 +176,25 @@ button {
   color:#dce8ff;
   border:1px solid #33415c;
 }
+
+.friendly-summary {
+  background:#101827;
+  border:1px solid #34507a;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.friendly-summary strong {
+  color:#ffffff;
+  margin-bottom:6px;
+}
+
+.friendly-summary span {
+  color:#d5e0f3;
+  font-family:Consolas, monospace;
+  font-size:13px;
+}
