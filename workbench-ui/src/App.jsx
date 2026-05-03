@@ -48,8 +48,30 @@ function parseOutput(text) {
   const changed = lines.some((line) => line.trim() === "NETWORK_STATE_CHANGED");
   const ok = lines.some((line) => line.includes("_OK"));
 
+  let stateLabel = "Ready";
+
+  if (lines.some(l => l.includes("SHUTTERWALL_IDENTITY_V1_OK"))) {
+    stateLabel = "Devices Identified";
+  }
+  else if (lines.some(l => l.includes("SHUTTERWALL_BASELINE_V1_OK"))) {
+    stateLabel = "Baseline Updated";
+  }
+  else if (lines.some(l => l.includes("SHUTTERWALL_PROTECT_OK"))) {
+    stateLabel = "Scan Preview Ready";
+  }
+  else if (changed) {
+    stateLabel = "Network Changed";
+  }
+  else if (stable) {
+    stateLabel = "Network Stable";
+  }
+  else if (ok) {
+    stateLabel = "Command Complete";
+  }
+
   return {
     state: changed ? "changed" : stable ? "stable" : ok ? "ok" : "idle",
+    stateLabel,
     alerts,
     identities,
     summaryLines,
@@ -123,7 +145,7 @@ export default function App() {
 
       <section className="summary">
         <div className={"state-card " + parsed.state}>
-          <strong>{parsed.state === "changed" ? "Network Changed" : parsed.state === "stable" ? "Network Stable" : parsed.state === "ok" ? "Command Complete" : "Ready"}</strong>
+          <strong>{parsed.stateLabel}</strong>
           <span>{parsed.alerts.length} alert(s)</span>
         </div>
         <div className="state-card safe">
@@ -189,5 +211,6 @@ export default function App() {
     </main>
   );
 }
+
 
 
