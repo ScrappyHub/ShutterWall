@@ -92,6 +92,10 @@ switch ($Command) {
     Write-Host "  shutterwall quickstart        # guided inspect + home-safe scan"
     Write-Host "  shutterwall inspect           # safe discovery/fingerprint only"
     Write-Host "  shutterwall watch [count]     # repeated safe device snapshots"
+    Write-Host "  shutterwall watch-start       # start quiet background monitoring"
+    Write-Host "  shutterwall watch-stop        # stop quiet background monitoring"
+    Write-Host "  shutterwall watch-status      # show monitor status"
+    Write-Host "  shutterwall watch-latest      # show latest monitor state"
     Write-Host "  shutterwall baseline          # create trusted network baseline"
     Write-Host "  shutterwall diff              # compare current network to baseline"
     Write-Host "  shutterwall identity          # label devices with type/confidence hints"
@@ -110,6 +114,11 @@ switch ($Command) {
   "doctor" { $latest = Get-LatestRunRoot -RepoRoot $RepoRoot; Write-Host ("LATEST_RUN_ROOT: " + $latest); Write-Host "SHUTTERWALL_DOCTOR_OK"; return }
   "quickstart" { Invoke-Quickstart; return }
   "inspect" { Invoke-Inspect; return }
+  "watch-start" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_watch_daemon_control_v1.ps1") -Mode start -RepoRoot $RepoRoot -IntervalSeconds 60; return }
+  "watch-stop" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_watch_daemon_control_v1.ps1") -Mode stop -RepoRoot $RepoRoot; return }
+  "watch-status" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_watch_daemon_control_v1.ps1") -Mode status -RepoRoot $RepoRoot; return }
+  "watch-latest" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_watch_daemon_control_v1.ps1") -Mode latest -RepoRoot $RepoRoot; return }
+
   "watch" { Invoke-Watch; return }
   "baseline" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_baseline_v1.ps1") -RepoRoot $RepoRoot; return }
   "diff" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1") -RepoRoot $RepoRoot; return }
@@ -127,4 +136,5 @@ switch ($Command) {
   "restore" { Invoke-Restore; return }
   default { Write-Host "UNKNOWN_COMMAND"; Write-Host "Run: shutterwall help"; return }
 }
+
 
