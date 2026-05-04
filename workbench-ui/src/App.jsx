@@ -2,33 +2,38 @@ import { useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
-const sections = [
-  {
+const sections = {
+  overview: {
     title: "Overview",
-    desc: "Start here. Understand what is on your local network without changing anything.",
+    desc: "Start here. Understand your local network without changing anything.",
     actions: [
-      { cmd: "quickstart", title: "Quickstart", desc: "Runs safe discovery and a home-safe preview so you can understand the current network state." },
-      { cmd: "inspect", title: "Inspect", desc: "Discovers local devices and writes evidence. No firewall changes. No enforcement." },
-      { cmd: "identity", title: "Identity", desc: "Labels discovered devices with likely type, confidence, vendor hint, and IP address." },
+      { cmd: "quickstart", title: "Quickstart", desc: "Runs safe discovery and a home-safe preview." },
+      { cmd: "inspect", title: "Inspect", desc: "Discovers devices. No firewall changes." },
+      { cmd: "identity", title: "Identity", desc: "Labels devices with type and confidence." },
     ],
   },
-  {
+  security: {
     title: "Security",
     desc: "Create a trusted baseline, compare against it, and monitor for changes.",
     actions: [
-      { cmd: "baseline", title: "Baseline", desc: "Stores the current network as the trusted known-good state." },
-      { cmd: "diff", title: "Diff", desc: "Compares the current network against the baseline and reports new, missing, or changed devices." },
-      { cmd: "watch 1", title: "Watch", desc: "Runs a monitoring tick using baseline + diff and reports whether the network changed." },
+      { cmd: "baseline", title: "Baseline", desc: "Stores current network as known-good." },
+      { cmd: "diff", title: "Diff", desc: "Finds new, missing, or changed devices." },
+      { cmd: "watch 1", title: "Watch", desc: "Runs one monitoring check." },
     ],
   },
-  {
+  enforce: {
     title: "Enforce",
-    desc: "Preview protections first. Actual apply and undo remain administrator-gated for safety.",
+    desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
-      { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan and shows target devices. No firewall changes are applied." },
+      { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
     ],
   },
-];
+  audit: {
+    title: "Audit",
+    desc: "Review raw command output and evidence paths when needed.",
+    actions: [],
+  },
+};
 
 function parseOutput(text) {
   const lines = String(text || "").split(/\r?\n/);
@@ -41,11 +46,12 @@ function parseOutput(text) {
     .filter((line) => line.trim().startsWith("DEVICE_IDENTITY ::"))
     .map((line) => {
       const parts = line.trim().split("::").map((p) => p.trim());
-      const ip = parts[1] || "";
-      const label = parts[2] || "Unknown Device";
-      const confidence = (parts[3] || "").replace("confidence=", "");
-      const vendor = (parts[4] || "").replace("vendor=", "");
-      return { ip, label, confidence, vendor };
+      return {
+        ip: parts[1] || "",
+        label: parts[2] || "Unknown Device",
+        confidence: (parts[3] || "").replace("confidence=", ""),
+        vendor: (parts[4] || "").replace("vendor=", ""),
+      };
     });
 
   const summaryLines = lines.filter((line) =>
@@ -67,20 +73,12 @@ function parseOutput(text) {
   const ok = lines.some((line) => line.includes("_OK"));
 
   let stateLabel = "Ready";
-
-  if (lines.some((l) => l.includes("SHUTTERWALL_IDENTITY_V1_OK"))) {
-    stateLabel = "Devices Identified";
-  } else if (lines.some((l) => l.includes("SHUTTERWALL_BASELINE_V1_OK"))) {
-    stateLabel = "Baseline Updated";
-  } else if (lines.some((l) => l.includes("SHUTTERWALL_PROTECT_OK"))) {
-    stateLabel = "Scan Preview Ready";
-  } else if (changed) {
-    stateLabel = "Network Changed";
-  } else if (stable) {
-    stateLabel = "Network Stable";
-  } else if (ok) {
-    stateLabel = "Command Complete";
-  }
+  if (lines.some((l) => l.includes("SHUTTERWALL_IDENTITY_V1_OK"))) stateLabel = "Devices Identified";
+  else if (lines.some((l) => l.includes("SHUTTERWALL_BASELINE_V1_OK"))) stateLabel = "Baseline Updated";
+  else if (lines.some((l) => l.includes("SHUTTERWALL_PROTECT_OK"))) stateLabel = "Scan Preview Ready";
+  else if (changed) stateLabel = "Network Changed";
+  else if (stable) stateLabel = "Network Stable";
+  else if (ok) stateLabel = "Command Complete";
 
   return {
     state: changed ? "changed" : stable ? "stable" : ok ? "ok" : "idle",
@@ -89,27 +87,6 @@ function parseOutput(text) {
     identities,
     summaryLines,
   };
-}
-
-function AlertCard({ alert }) {
-  const parts = alert.split("::").map((p) => p.trim());
-  const token = parts[0] || alert;
-  const ip = parts[1] || "";
-  const message = parts[2] || "";
-
-  let label = "Network Alert";
-  if (token === "ALERT_NEW_DEVICE") label = "New Device";
-  if (token === "ALERT_DEVICE_MISSING") label = "Missing Device";
-  if (token === "ALERT_FINGERPRINT_CHANGED") label = "Fingerprint Changed";
-  if (token === "ALERT_NETWORK_STATE_CHANGED") label = "Network Changed";
-
-  return (
-    <div className="alert-card">
-      <strong>{label}</strong>
-      {ip ? <span>{ip}</span> : null}
-      {message ? <p>{message}</p> : null}
-    </div>
-  );
 }
 
 function IdentityCard({ device }) {
@@ -126,12 +103,14 @@ function IdentityCard({ device }) {
 }
 
 export default function App() {
+  const [active, setActive] = useState("overview");
   const [output, setOutput] = useState("Ready. Choose an action.");
   const [running, setRunning] = useState(false);
   const [lastCommand, setLastCommand] = useState("");
   const [showRaw, setShowRaw] = useState(false);
 
   const parsed = useMemo(() => parseOutput(output), [output]);
+  const current = sections[active];
 
   async function run(cmd) {
     setRunning(true);
@@ -149,89 +128,90 @@ export default function App() {
   }
 
   return (
-    <main className="shell">
-      <section className="hero">
-        <p className="eyebrow">ShutterWall</p>
-        <h1>Protect and monitor your local network.</h1>
-        <p className="sub">Local-first network protection, baseline integrity, diff alerts, watch monitoring, and safe restore.</p>
-      </section>
+    <main className="app-layout">
+      <aside className="sidebar">
+        <div className="brand">
+          <span>SHUTTERWALL</span>
+          <strong>Network Protection</strong>
+        </div>
 
-      <section className="summary">
-        <div className={"state-card " + parsed.state}>
+        {Object.entries(sections).map(([key, section]) => (
+          <button
+            key={key}
+            className={"nav-item " + (active === key ? "active" : "")}
+            onClick={() => setActive(key)}
+          >
+            {section.title}
+          </button>
+        ))}
+
+        <div className="side-state">
           <strong>{parsed.stateLabel}</strong>
           <span>{parsed.alerts.length} alert(s)</span>
         </div>
-        <div className="state-card safe">
-          <strong>Safe Commands</strong>
-          <span>Overview and Security commands are safe by default and do not apply firewall changes.</span>
-        </div>
-        <div className="state-card locked">
-          <strong>Protected Enforcement</strong>
-          <span>Apply and undo stay administrator-gated so changes are intentional.</span>
-        </div>
-      </section>
+      </aside>
 
-      {parsed.alerts.length > 0 && (
-        <section className="alerts">
-          {parsed.alerts.map((alert, index) => <AlertCard key={index} alert={alert} />)}
+      <section className="main-panel">
+        <section className="hero compact">
+          <p className="eyebrow">ShutterWall</p>
+          <h1>{current.title}</h1>
+          <p className="sub">{current.desc}</p>
         </section>
-      )}
 
-      {parsed.identities.length > 0 && (
-        <section className="devices-section">
-          <div className="section-title">
-            <strong>Detected Devices</strong>
-            <span>{parsed.identities.length} device(s)</span>
-          </div>
-          <div className="devices-grid">
-            {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
-          </div>
-        </section>
-      )}
-
-      <section className="sections">
-        {sections.map((section) => (
-          <div className="command-section" key={section.title}>
-            <div className="section-heading">
-              <strong>{section.title}</strong>
-              <p>{section.desc}</p>
+        {parsed.identities.length > 0 && active === "overview" ? (
+          <section className="devices-section">
+            <div className="section-title">
+              <strong>Detected Devices</strong>
+              <span>{parsed.identities.length} device(s)</span>
             </div>
-            <div className="section-actions">
-              {section.actions.map((a) => (
-                <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
-                  <strong>{a.title}</strong>
-                  <span>{a.desc}</span>
-                </button>
-              ))}
+            <div className="devices-grid">
+              {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
             </div>
-          </div>
-        ))}
-      </section>
+          </section>
+        ) : null}
 
-      <section className="enforce-note">
-        <strong>Apply / Undo</strong>
-        <span>Protection apply and restore are available through elevated PowerShell: <code>shutterwall apply</code> and <code>shutterwall undo</code>. They are intentionally not exposed as casual one-click actions yet.</span>
-      </section>
+        {current.actions.length > 0 ? (
+          <section className="section-actions panel-actions">
+            {current.actions.map((a) => (
+              <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
+                <strong>{a.title}</strong>
+                <span>{a.desc}</span>
+              </button>
+            ))}
+          </section>
+        ) : null}
 
-      <section className="commandbar">
-        <strong>Status:</strong> {running ? "Running..." : "Ready"}
-        {lastCommand ? <span>Last command: {lastCommand}</span> : null}
-      </section>
+        {active === "enforce" ? (
+          <section className="enforce-note">
+            <strong>Apply / Undo</strong>
+            <span>Use elevated PowerShell: <code>shutterwall apply</code> or <code>shutterwall undo</code>.</span>
+          </section>
+        ) : null}
 
-      {parsed.summaryLines.length > 0 ? (
-        <section className="friendly-summary">
-          <strong>Command Summary</strong>
-          {parsed.summaryLines.map((line, index) => <span key={index}>{line}</span>)}
+        <section className="commandbar">
+          <strong>Status:</strong> {running ? "Running..." : "Ready"}
+          {lastCommand ? <span>Last command: {lastCommand}</span> : null}
         </section>
-      ) : null}
 
-      <section className="raw-toggle">
-        <button type="button" onClick={() => setShowRaw(!showRaw)}>
-          {showRaw ? "Hide Raw Output" : "Show Raw Output"}
-        </button>
+        {parsed.summaryLines.length > 0 ? (
+          <section className="friendly-summary">
+            <strong>Command Summary</strong>
+            {parsed.summaryLines.map((line, index) => <span key={index}>{line}</span>)}
+          </section>
+        ) : null}
+
+        {active === "audit" ? (
+          <pre className="output">{output}</pre>
+        ) : (
+          <section className="raw-toggle">
+            <button type="button" onClick={() => setShowRaw(!showRaw)}>
+              {showRaw ? "Hide Raw Output" : "Show Raw Output"}
+            </button>
+          </section>
+        )}
+
+        {active !== "audit" && showRaw ? <pre className="output">{output}</pre> : null}
       </section>
-
-      {showRaw ? <pre className="output">{output}</pre> : null}
     </main>
   );
 }
