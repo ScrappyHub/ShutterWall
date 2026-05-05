@@ -35,6 +35,46 @@ function Append-NdjsonLine {
   [System.IO.File]::AppendAllText($Path, ((($line -replace "`r`n","`n") -replace "`r","`n") + "`n"), $enc)
 }
 
+function Quote-Arg {
+  param([string]$Value)
+  return '"' + ($Value -replace '"','\"') + '"'
+}
+
+function Invoke-HiddenCapture {
+  param(
+    [string]$FilePath,
+    [string[]]$Arguments,
+    [string]$StdoutPath,
+    [string]$StderrPath
+  )
+
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = $FilePath
+  $psi.Arguments = (($Arguments | ForEach-Object { Quote-Arg $_ }) -join " ")
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+
+  $p = New-Object System.Diagnostics.Process
+  $p.StartInfo = $psi
+
+  [void]$p.Start()
+  $stdout = $p.StandardOutput.ReadToEnd()
+  $stderr = $p.StandardError.ReadToEnd()
+  $p.WaitForExit()
+
+  Write-Utf8NoBomLf -Path $StdoutPath -Text $stdout
+  Write-Utf8NoBomLf -Path $StderrPath -Text $stderr
+
+  return [ordered]@{
+    exit_code = $p.ExitCode
+    stdout = $stdout
+    stderr = $stderr
+  }
+}
+
 if($IntervalSeconds -lt 10){ throw "INTERVAL_TOO_LOW_MIN_10_SECONDS" }
 
 Append-NdjsonLine -Path $ReceiptPath -Object ([ordered]@{
@@ -59,15 +99,18 @@ while($true){
   $out = Join-Path $DaemonRoot ("tick_" + $stamp + ".stdout.txt")
   $err = Join-Path $DaemonRoot ("tick_" + $stamp + ".stderr.txt")
 
-  $args = @("-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",(Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1"),"-RepoRoot",$RepoRoot)
-  $p = Start-Process -FilePath $PSExe -ArgumentList $args -Wait -PassThru -WindowStyle Hidden -RedirectStandardOutput $out -RedirectStandardError $err
+  $args = @(
+    "-NoProfile",
+    "-NonInteractive",
+    "-ExecutionPolicy","Bypass",
+    "-File",(Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1"),
+    "-RepoRoot",$RepoRoot
+  )
 
-  $stdout = ""
-  $stderr = ""
-  if(Test-Path -LiteralPath $out){ $stdout = [System.IO.File]::ReadAllText($out) }
-  if(Test-Path -LiteralPath $err){ $stderr = [System.IO.File]::ReadAllText($err) }
-
+  $result = Invoke-HiddenCapture -FilePath $PSExe -Arguments $args -StdoutPath $out -StderrPath $err
+  $stdout = [string]$result.stdout
   $lines = @($stdout -split "`r?`n")
+
   $state = "UNKNOWN"
   if($stdout.Contains("NETWORK_STATE_CHANGED")){ $state = "NETWORK_STATE_CHANGED" }
   elseif($stdout.Contains("NETWORK_STATE_STABLE")){ $state = "NETWORK_STATE_STABLE" }
@@ -91,7 +134,7 @@ while($true){
     alerts = @($alerts)
     stdout_path = $out
     stderr_path = $err
-    exit_code = $p.ExitCode
+    exit_code = $result.exit_code
   }
 
   Write-Utf8NoBomLf -Path $LatestPath -Text ($latest | ConvertTo-Json -Depth 30)

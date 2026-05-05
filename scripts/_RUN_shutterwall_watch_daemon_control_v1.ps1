@@ -26,6 +26,27 @@ function Write-Utf8NoBomLf {
   [System.IO.File]::WriteAllText($Path,$norm,$enc)
 }
 
+function Quote-Arg {
+  param([string]$Value)
+  return '"' + ($Value -replace '"','\"') + '"'
+}
+
+function Start-HiddenDetached {
+  param([string]$FilePath,[string[]]$Arguments)
+
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = $FilePath
+  $psi.Arguments = (($Arguments | ForEach-Object { Quote-Arg $_ }) -join " ")
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+
+  $p = New-Object System.Diagnostics.Process
+  $p.StartInfo = $psi
+  [void]$p.Start()
+  return $p
+}
+
 function Get-ExistingPid {
   if(-not (Test-Path -LiteralPath $PidPath)){ return 0 }
   try {
@@ -36,6 +57,7 @@ function Get-ExistingPid {
 
 if($Mode -eq "start"){
   if(Test-Path -LiteralPath $StopFile){ Remove-Item -LiteralPath $StopFile -Force }
+
   $existing = Get-ExistingPid
   if($existing -gt 0){
     $proc = Get-Process -Id $existing -ErrorAction SilentlyContinue
@@ -45,12 +67,28 @@ if($Mode -eq "start"){
     }
   }
 
-  $args = @("-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",$DaemonScript,"-RepoRoot",$RepoRoot,"-IntervalSeconds",$IntervalSeconds)
-  $p = Start-Process -FilePath $PSExe -ArgumentList $args -PassThru -WindowStyle Hidden
-  $doc = [ordered]@{ schema="shutterwall.watch_daemon.pid.v1"; pid=$p.Id; started_at_utc=[DateTime]::UtcNow.ToString("o"); interval_seconds=$IntervalSeconds; daemon_root=$DaemonRoot }
+  $args = @(
+    "-WindowStyle","Hidden",
+    "-NoProfile",
+    "-NonInteractive",
+    "-ExecutionPolicy","Bypass",
+    "-File",$DaemonScript,
+    "-RepoRoot",$RepoRoot,
+    "-IntervalSeconds",$IntervalSeconds
+  )
+
+  $p = Start-HiddenDetached -FilePath $PSExe -Arguments $args
+  $doc = [ordered]@{
+    schema="shutterwall.watch_daemon.pid.v1"
+    pid=$p.Id
+    started_at_utc=[DateTime]::UtcNow.ToString("o")
+    interval_seconds=$IntervalSeconds
+    daemon_root=$DaemonRoot
+    silent=$true
+  }
+
   Write-Utf8NoBomLf -Path $PidPath -Text ($doc | ConvertTo-Json -Depth 10)
   Write-Host ("WATCH_DAEMON_STARTED: " + $p.Id) -ForegroundColor Green
-  Write-Host ("WATCH_DAEMON_PID_PATH: " + $PidPath) -ForegroundColor Green
   Write-Host "SHUTTERWALL_WATCH_DAEMON_START_OK" -ForegroundColor Green
   return
 }
@@ -73,8 +111,9 @@ if($Mode -eq "status"){
   if($watchPid -gt 0){
     $proc = Get-Process -Id $watchPid -ErrorAction SilentlyContinue
     if($proc){
-      Write-Host ("WATCH_DAEMON_STATUS: RUNNING") -ForegroundColor Green
+      Write-Host "WATCH_DAEMON_STATUS: RUNNING" -ForegroundColor Green
       Write-Host ("PID: " + $watchPid) -ForegroundColor Green
+      Write-Host "SILENT: true" -ForegroundColor Green
       Write-Host "SHUTTERWALL_WATCH_DAEMON_STATUS_OK" -ForegroundColor Green
       return
     }
@@ -93,4 +132,3 @@ if($Mode -eq "latest"){
   Write-Host "WATCH_DAEMON_LATEST_MISSING" -ForegroundColor Yellow
   return
 }
-
