@@ -26,6 +26,8 @@ const sections = {
     desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
       { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
+      { cmd: "apply", title: "Apply Protection", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
+      { cmd: "undo", title: "Undo Protection", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
   audit: {
@@ -108,9 +110,32 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [lastCommand, setLastCommand] = useState("");
   const [showRaw, setShowRaw] = useState(false);
+  const [pendingGate, setPendingGate] = useState(null);
+  const [gateText, setGateText] = useState("");
 
   const parsed = useMemo(() => parseOutput(output), [output]);
   const current = sections[active];
+
+  function requestRun(action) {
+    if (action.confirm) {
+      setPendingGate(action);
+      setGateText("");
+      return;
+    }
+    run(action.cmd);
+  }
+
+  function confirmGate() {
+    if (!pendingGate) return;
+    if (gateText.trim().toUpperCase() !== pendingGate.confirm) {
+      setOutput("CONFIRMATION_REQUIRED: type " + pendingGate.confirm + " to continue.");
+      return;
+    }
+    const cmd = pendingGate.cmd;
+    setPendingGate(null);
+    setGateText("");
+    run(cmd);
+  }
 
   async function run(cmd) {
     setRunning(true);
@@ -173,7 +198,7 @@ export default function App() {
         {current.actions.length > 0 ? (
           <section className="section-actions panel-actions">
             {current.actions.map((a) => (
-              <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
+              <button key={a.cmd} disabled={running} onClick={() => requestRun(a)}>
                 <strong>{a.title}</strong>
                 <span>{a.desc}</span>
               </button>
@@ -185,6 +210,19 @@ export default function App() {
           <section className="enforce-note">
             <strong>Apply / Undo</strong>
             <span>Use elevated PowerShell: <code>shutterwall apply</code> or <code>shutterwall undo</code>.</span>
+          </section>
+        ) : null}
+
+        {pendingGate ? (
+          <section className="confirm-gate">
+            <strong>{pendingGate.title}</strong>
+            <p>{pendingGate.desc}</p>
+            <p className="danger-copy">This may change Windows Firewall rules and affect device connectivity. Type <code>{pendingGate.confirm}</code> to continue.</p>
+            <div className="confirm-row">
+              <input value={gateText} onChange={(e) => setGateText(e.target.value)} placeholder={"Type " + pendingGate.confirm} />
+              <button type="button" onClick={confirmGate}>Confirm</button>
+              <button type="button" className="secondary" onClick={() => setPendingGate(null)}>Cancel</button>
+            </div>
           </section>
         ) : null}
 
@@ -215,3 +253,4 @@ export default function App() {
     </main>
   );
 }
+

@@ -51,3 +51,60 @@ body { margin:0; background:#080d18; color:#e7eef8; font-family:Segoe UI, Arial,
   .sidebar { position:relative; height:auto; }
   .main-panel { padding:20px; }
 }
+
+.confirm-gate {
+  border:1px solid rgba(255, 92, 92, .55);
+  background:rgba(255, 92, 92, .10);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.confirm-gate strong {
+  display:block;
+  color:#ffffff;
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.confirm-gate p {
+  color:#ffd6d6;
+  margin:0 0 10px 0;
+}
+
+.danger-copy code {
+  color:#ffffff;
+  background:#3a1111;
+  padding:2px 6px;
+  border-radius:6px;
+}
+
+.confirm-row {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.confirm-row input {
+  flex:1;
+  min-width:220px;
+  background:#080d18;
+  color:#ffffff;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  padding:12px 14px;
+}
+
+.confirm-row button {
+  min-height:auto;
+  width:auto;
+  padding:12px 16px;
+  border-radius:12px;
+}
+
+.confirm-row button.secondary {
+  background:#172033;
+  color:#dce8ff;
+  border:1px solid #33415c;
+}
