@@ -26,8 +26,8 @@ const sections = {
     desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
       { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
-      { cmd: "apply", title: "Apply Protection (Admin Required – Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
-      { cmd: "undo", title: "Undo Protection (Admin Required – Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
+      { cmd: "apply", title: "Apply Protection (Admin Required Ã¢â‚¬â€œ Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
+      { cmd: "undo", title: "Undo Protection (Admin Required Ã¢â‚¬â€œ Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
   audit: {
@@ -53,6 +53,7 @@ function parseOutput(text) {
         label: parts[2] || "Unknown Device",
         confidence: (parts[3] || "").replace("confidence=", ""),
         vendor: (parts[4] || "").replace("vendor=", ""),
+        userLabel: (parts[5] || "").replace("user_label=", ""),
       };
     });
 
@@ -94,8 +95,16 @@ function parseOutput(text) {
 function IdentityCard({ device }) {
   return (
     <div className="identity-card">
-      <strong>{device.label}</strong>
-      <span className="identity-ip">{device.ip}</span>
+      <strong>{device.userLabel || device.label}</strong>
+      {device.userLabel ? <span className="engine-guess">Engine guess: {device.label}</span> : null}
+
+      {device.label === "Needs Review" ? (
+        <div className="review-note">
+          Not enough strong fingerprint evidence yet.
+          Label this device if you recognize it.
+        </div>
+      ) : null}
+      <span className="identity-ip">IP: {device.ip}</span>
       <div className="identity-meta">
         <span>Confidence: {device.confidence || "unknown"}</span>
         <span>Vendor: {device.vendor || "unknown"}</span>
@@ -104,7 +113,8 @@ function IdentityCard({ device }) {
   );
 }
 
-export default function App() {
+export default // REVIEW_EXPLANATION_V1
+function App() {
   const [active, setActive] = useState("overview");
   const [output, setOutput] = useState("Ready. Choose an action.");
   const [running, setRunning] = useState(false);
@@ -253,4 +263,6 @@ export default function App() {
     </main>
   );
 }
+
+
 

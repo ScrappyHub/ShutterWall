@@ -331,3 +331,29 @@ html, body, #root {
     padding: 20px;
   }
 }
+
+.review-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #cfd6dd;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.alert-explainer {
+  margin-top: 18px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255,180,0,0.08);
+  border: 1px solid rgba(255,180,0,0.18);
+}
+
+.alert-explainer strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffd27a;
+}
