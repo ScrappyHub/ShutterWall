@@ -33,6 +33,28 @@ function Get-PropString {
   return [string]$p.Value
 }
 
+
+function Get-DeviceLabels {
+  param([string]$RepoRoot)
+
+  $LabelPath = Join-Path $RepoRoot "proofs\labels\device.labels.v1.json"
+  $labels = [ordered]@{}
+
+  if(Test-Path -LiteralPath $LabelPath){
+    try {
+      $doc = Get-Content -LiteralPath $LabelPath -Raw | ConvertFrom-Json
+      if($doc.labels){
+        foreach($p in $doc.labels.PSObject.Properties){
+          $labels[$p.Name] = [string]$p.Value
+        }
+      }
+    } catch {
+      # Labels are optional. Ignore malformed label file for identity generation.
+    }
+  }
+
+  return $labels
+}
 function Get-TextBlob {
   param($Obj)
   if($null -eq $Obj){ return "" }
@@ -49,33 +71,44 @@ function Infer-DeviceIdentity {
 
   $signals = New-Object System.Collections.ArrayList
   $blob = ((Get-TextBlob $Device) + " " + (Get-TextBlob $Fingerprint)).ToLowerInvariant()
-  $score = 20
+  $score = 10
   $kind = "unknown_device"
   $label = "Unknown Network Device"
   $vendor = "unknown"
 
-  if($blob -match "rtsp|onvif|554|camera|surveillance|ipcam|hikvision|dahua|amcrest|reolink|axis"){
-    $score += 45
+  $hasStrongCameraSignal = $false
+  if($blob -match "rtsp|onvif|ipcam|hikvision|dahua|amcrest|reolink|axis"){
+    $hasStrongCameraSignal = $true
+  }
+
+  if($hasStrongCameraSignal){
+    $score += 55
     $kind = "camera_like"
     $label = "Likely Camera / Surveillance Device"
-    Add-Signal $signals "camera_or_rtsp_signal"
+    Add-Signal $signals "strong_camera_signal"
+  }
+  elseif($blob -match "554|camera|surveillance"){
+    $score += 20
+    $kind = "needs_review"
+    $label = "Needs Review"
+    Add-Signal $signals "weak_camera_signal"
   }
 
   if($blob -match "printer|ipp|cups|9100|515|631|brother|canon|epson|hp laser|hewlett"){
     $score += 35
-    if($kind -eq "unknown_device"){ $kind = "printer_like"; $label = "Likely Printer" }
+    if($kind -eq "unknown_device" -or $kind -eq "needs_review"){ $kind = "printer_like"; $label = "Likely Printer" }
     Add-Signal $signals "printer_signal"
   }
 
   if($blob -match "router|gateway|dns|dhcp|upnp|192\.168\.[0-9]+\.1"){
     $score += 25
-    if($kind -eq "unknown_device"){ $kind = "network_gateway_like"; $label = "Likely Router / Gateway" }
+    if($kind -eq "unknown_device" -or $kind -eq "needs_review"){ $kind = "network_gateway_like"; $label = "Likely Router / Gateway" }
     Add-Signal $signals "gateway_signal"
   }
 
   if($blob -match "tv|roku|chromecast|cast|samsung|lg webos|androidtv|airplay"){
     $score += 30
-    if($kind -eq "unknown_device"){ $kind = "media_iot_like"; $label = "Likely Smart TV / Media Device" }
+    if($kind -eq "unknown_device" -or $kind -eq "needs_review"){ $kind = "media_iot_like"; $label = "Likely Smart TV / Media Device" }
     Add-Signal $signals "media_iot_signal"
   }
 
@@ -92,12 +125,30 @@ function Infer-DeviceIdentity {
   if([string]::IsNullOrWhiteSpace($ip)){ $ip = Get-PropString $Fingerprint "ip" }
   if(-not [string]::IsNullOrWhiteSpace($ip)){ Add-Signal $signals "ip_observed" }
 
+  # IDENTITY_CALIBRATION_V2:
+  # Avoid overclaiming camera identity from generic network presence.
+  if($kind -eq "unknown_device"){
+    $label = "Unknown Network Device"
+    if($score -gt 35){ $score = 35 }
+  }
+
+  if($kind -eq "needs_review"){
+    $label = "Needs Review"
+    if($score -gt 55){ $score = 55 }
+  }
+
   if($score -gt 95){ $score = 95 }
   if($score -lt 5){ $score = 5 }
+
+  $userLabel = ""
+  if((-not [string]::IsNullOrWhiteSpace($ip)) -and $script:DeviceLabels.Contains($ip)){
+    $userLabel = [string]$script:DeviceLabels[$ip]
+  }
 
   return [ordered]@{
     schema = "shutterwall.device.identity.v1"
     ip = $ip
+    user_label = $userLabel
     label = $label
     device_type_guess = $kind
     confidence = [math]::Round(($score / 100.0), 2)
@@ -126,6 +177,7 @@ foreach($fp in $fingerprints){
   if(-not [string]::IsNullOrWhiteSpace($ip)){ $fpByIp[$ip] = $fp }
 }
 
+$script:DeviceLabels = Get-DeviceLabels -RepoRoot $RepoRoot
 $identities = New-Object System.Collections.ArrayList
 foreach($d in $devices){
   $ip = Get-PropString $d "ip"
@@ -148,6 +200,6 @@ Write-Utf8NoBomLf -Path $outPath -Text ($doc | ConvertTo-Json -Depth 30)
 Write-Host ("IDENTITY_PATH: " + $outPath) -ForegroundColor Green
 Write-Host ("IDENTITY_DEVICE_COUNT: " + @($identities).Count) -ForegroundColor Yellow
 foreach($id in @($identities)){
-  Write-Host ("DEVICE_IDENTITY :: " + $id.ip + " :: " + $id.label + " :: confidence=" + $id.confidence_percent + "% :: vendor=" + $id.vendor_hint) -ForegroundColor Cyan
+  Write-Host ("DEVICE_IDENTITY :: " + $id.ip + " :: " + $id.label + " :: confidence=" + $id.confidence_percent + "% :: vendor=" + $id.vendor_hint + " :: user_label=" + $id.user_label) -ForegroundColor Cyan
 }
 Write-Host "SHUTTERWALL_IDENTITY_V1_OK" -ForegroundColor Green
