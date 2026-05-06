@@ -122,6 +122,48 @@ switch ($Command) {
   "watch" { Invoke-Watch; return }
   "baseline" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_baseline_v1.ps1") -RepoRoot $RepoRoot; return }
   "diff" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_diff_v1.ps1") -RepoRoot $RepoRoot; return }
+  "label-set" {
+
+      if([string]::IsNullOrWhiteSpace($Arg1)){
+        throw "LABEL_SET_REQUIRES_IP"
+      }
+
+      if([string]::IsNullOrWhiteSpace($Arg2)){
+        throw "LABEL_SET_REQUIRES_NAME"
+      }
+
+      & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_label_v1.ps1") `
+        -Mode set `
+        -Ip $Arg1 `
+        -Name $Arg2 `
+        -RepoRoot $RepoRoot
+
+      return
+    }
+
+    "label-list" {
+
+      & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_label_v1.ps1") `
+        -Mode list `
+        -RepoRoot $RepoRoot
+
+      return
+    }
+
+    "label-remove" {
+
+      if([string]::IsNullOrWhiteSpace($Arg1)){
+        throw "LABEL_REMOVE_REQUIRES_IP"
+      }
+
+      & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_label_v1.ps1") `
+        -Mode remove `
+        -Ip $Arg1 `
+        -RepoRoot $RepoRoot
+
+      return
+    }
+
   "identity" { $latest = Get-LatestRunRoot -RepoRoot $RepoRoot; & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_identity_v1.ps1") -RepoRoot $RepoRoot -RunRoot $latest; return }
   "scan" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
   "protect" { Invoke-ProtectionPreview -PolicyProfile "home_safe"; return }
