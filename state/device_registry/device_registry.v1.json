@@ -1,0 +1,66 @@
+{
+    "schema":  "shutterwall.device_registry.v1",
+    "updated_at_utc":  "2026-05-06T22:36:55.0550143Z",
+    "devices":  [
+                    {
+                        "ip":  "192.168.4.36",
+                        "user_label":  "",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.39",
+                        "user_label":  "",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.30",
+                        "user_label":  "Garage Camera",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.1",
+                        "user_label":  "Printer",
+                        "engine_guess":  "Likely Router / Gateway",
+                        "confidence_percent":  55,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.24",
+                        "user_label":  "",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    }
+                ]
+}
