@@ -27,11 +27,11 @@ const sections = {
     desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
       { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
-      { cmd: "apply", title: "Apply Protection (Admin Required ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
-      { cmd: "undo", title: "Undo Protection (Admin Required ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
+      { cmd: "apply", title: "Apply Protection (Admin Required - Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
+      { cmd: "undo", title: "Undo Protection (Admin Required - Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
-  audit: {
+  evidence: {
     title: "Evidence",
     desc: "Review raw command output and evidence paths when needed.",
     actions: [],
@@ -102,8 +102,8 @@ function parseOutput(text) {
     stateLabel,
     alerts,
     identities,
-    summaryLines,
     registryDevices,
+    summaryLines,
   };
 }
 
@@ -112,12 +112,8 @@ function IdentityCard({ device }) {
     <div className="identity-card">
       <strong>{device.userLabel || device.label}</strong>
       {device.userLabel ? <span className="engine-guess">Engine guess: {device.label}</span> : null}
-
       {device.label === "Needs Review" ? (
-        <div className="review-note">
-          Not enough strong fingerprint evidence yet.
-          Label this device if you recognize it.
-        </div>
+        <div className="review-note">Not enough strong fingerprint evidence yet. Label this device if you recognize it.</div>
       ) : null}
       <span className="identity-ip">IP: {device.ip}</span>
       <div className="identity-meta">
@@ -128,39 +124,29 @@ function IdentityCard({ device }) {
   );
 }
 
-export default // REVIEW_EXPLANATION_V1
-function App() {
+function RegistryCard({ device }) {
+  return (
+    <div className="registry-card">
+      <strong>{device.name}</strong>
+      <span className="registry-ip">IP: {device.ip}</span>
+      <div className="registry-meta">
+        <span>Trust: {device.trust || "unknown"}</span>
+        <span>Changes: {device.changes || "0"}</span>
+        <span>Last seen: {device.lastSeen || "unknown"}</span>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
   const [active, setActive] = useState("overview");
   const [output, setOutput] = useState("Ready. Choose an action.");
   const [running, setRunning] = useState(false);
   const [lastCommand, setLastCommand] = useState("");
   const [showRaw, setShowRaw] = useState(false);
-  const [pendingGate, setPendingGate] = useState(null);
-  const [gateText, setGateText] = useState("");
 
   const parsed = useMemo(() => parseOutput(output), [output]);
   const current = sections[active];
-
-  function requestRun(action) {
-    if (action.confirm) {
-      setPendingGate(action);
-      setGateText("");
-      return;
-    }
-    run(action.cmd);
-  }
-
-  function confirmGate() {
-    if (!pendingGate) return;
-    if (gateText.trim().toUpperCase() !== pendingGate.confirm) {
-      setOutput("CONFIRMATION_REQUIRED: type " + pendingGate.confirm + " to continue.");
-      return;
-    }
-    const cmd = pendingGate.cmd;
-    setPendingGate(null);
-    setGateText("");
-    run(cmd);
-  }
 
   async function run(cmd) {
     setRunning(true);
@@ -186,11 +172,7 @@ function App() {
         </div>
 
         {Object.entries(sections).map(([key, section]) => (
-          <button
-            key={key}
-            className={"nav-item " + (active === key ? "active" : "")}
-            onClick={() => setActive(key)}
-          >
+          <button key={key} className={"nav-item " + (active === key ? "active" : "")} onClick={() => setActive(key)}>
             {section.title}
           </button>
         ))}
@@ -235,7 +217,7 @@ function App() {
         {current.actions.length > 0 ? (
           <section className="section-actions panel-actions">
             {current.actions.map((a) => (
-              <button key={a.cmd} disabled={running} onClick={() => requestRun(a)}>
+              <button key={a.cmd} disabled={running} onClick={() => run(a.cmd)}>
                 <strong>{a.title}</strong>
                 <span>{a.desc}</span>
               </button>
@@ -246,20 +228,7 @@ function App() {
         {active === "enforce" ? (
           <section className="enforce-note">
             <strong>Apply / Undo</strong>
-            <span>Use elevated PowerShell: <code>shutterwall apply</code> or <code>shutterwall undo</code>.</span>
-          </section>
-        ) : null}
-
-        {pendingGate ? (
-          <section className="confirm-gate">
-            <strong>{pendingGate.title}</strong>
-            <p>{pendingGate.desc}</p>
-            <p className="danger-copy">This may change Windows Firewall rules and affect device connectivity. Type <code>{pendingGate.confirm}</code> to continue.</p>
-            <div className="confirm-row">
-              <input value={gateText} onChange={(e) => setGateText(e.target.value)} placeholder={"Type " + pendingGate.confirm} />
-              <button type="button" onClick={confirmGate}>Confirm</button>
-              <button type="button" className="secondary" onClick={() => setPendingGate(null)}>Cancel</button>
-            </div>
+            <span>Manual only for now: use elevated PowerShell with <code>shutterwall apply</code> or <code>shutterwall undo</code>.</span>
           </section>
         ) : null}
 
@@ -275,7 +244,14 @@ function App() {
           </section>
         ) : null}
 
-        {active === "audit" ? (
+        {parsed.summaryLines.some((x) => x.includes("ALERT_FINGERPRINT_CHANGED")) ? (
+          <div className="alert-explainer">
+            <strong>Fingerprint Changed</strong>
+            <div>A device identity signal changed since your baseline. Re-baseline only if you recognize and trust the change.</div>
+          </div>
+        ) : null}
+
+        {active === "evidence" ? (
           <pre className="output">{output}</pre>
         ) : (
           <section className="raw-toggle">
@@ -285,12 +261,8 @@ function App() {
           </section>
         )}
 
-        {active !== "audit" && showRaw ? <pre className="output">{output}</pre> : null}
+        {active !== "evidence" && showRaw ? <pre className="output">{output}</pre> : null}
       </section>
     </main>
   );
 }
-
-
-
-
