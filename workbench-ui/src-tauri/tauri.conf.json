@@ -13,8 +13,8 @@
                 "windows":  [
                                 {
                                     "title":  "workbench-ui",
-                                    "width":  1320,
-                                    "height":  860,
+                                    "width":  1200,
+                                    "height":  760,
                                     "resizable":  true,
                                     "fullscreen":  false
                                 }
