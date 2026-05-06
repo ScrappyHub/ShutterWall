@@ -26,12 +26,12 @@ const sections = {
     desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
       { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
-      { cmd: "apply", title: "Apply Protection", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
-      { cmd: "undo", title: "Undo Protection", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
+      { cmd: "apply", title: "Apply Protection (Admin Required – Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
+      { cmd: "undo", title: "Undo Protection (Admin Required – Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
   audit: {
-    title: "Audit",
+    title: "Evidence",
     desc: "Review raw command output and evidence paths when needed.",
     actions: [],
   },
