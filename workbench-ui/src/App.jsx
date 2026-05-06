@@ -10,6 +10,7 @@ const sections = {
       { cmd: "quickstart", title: "Quickstart", desc: "Runs safe discovery and a home-safe preview." },
       { cmd: "inspect", title: "Inspect", desc: "Discovers devices. No firewall changes." },
       { cmd: "identity", title: "Identity", desc: "Labels devices with type and confidence." },
+      { cmd: "registry", title: "Device Registry", desc: "Shows persistent network memory: labels, trust state, changes, and last seen." },
     ],
   },
   security: {
@@ -26,8 +27,8 @@ const sections = {
     desc: "Preview protections first. Apply and undo stay administrator-gated.",
     actions: [
       { cmd: "scan", title: "Scan Preview", desc: "Builds a protection plan without applying changes." },
-      { cmd: "apply", title: "Apply Protection (Admin Required Ã¢â‚¬â€œ Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
-      { cmd: "undo", title: "Undo Protection (Admin Required Ã¢â‚¬â€œ Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
+      { cmd: "apply", title: "Apply Protection (Admin Required ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Coming Soon)", desc: "Requires confirmation and administrator elevation. Applies ShutterWall firewall protection rules.", confirm: "APPLY" },
+      { cmd: "undo", title: "Undo Protection (Admin Required ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
   audit: {
@@ -54,6 +55,19 @@ function parseOutput(text) {
         confidence: (parts[3] || "").replace("confidence=", ""),
         vendor: (parts[4] || "").replace("vendor=", ""),
         userLabel: (parts[5] || "").replace("user_label=", ""),
+      };
+    });
+
+  const registryDevices = lines
+    .filter((line) => line.trim().startsWith("DEVICE_REGISTRY ::"))
+    .map((line) => {
+      const parts = line.trim().split("::").map((p) => p.trim());
+      return {
+        ip: parts[1] || "",
+        name: parts[2] || "Unknown Device",
+        trust: (parts[3] || "").replace("trust=", ""),
+        changes: (parts[4] || "").replace("changes=", ""),
+        lastSeen: (parts[5] || "").replace("last_seen=", ""),
       };
     });
 
@@ -89,6 +103,7 @@ function parseOutput(text) {
     alerts,
     identities,
     summaryLines,
+    registryDevices,
   };
 }
 
@@ -193,6 +208,18 @@ function App() {
           <p className="sub">{current.desc}</p>
         </section>
 
+        {parsed.registryDevices.length > 0 && active === "overview" ? (
+          <section className="registry-section">
+            <div className="section-title">
+              <strong>Network Memory</strong>
+              <span>{parsed.registryDevices.length} registered device(s)</span>
+            </div>
+            <div className="registry-grid">
+              {parsed.registryDevices.map((device, index) => <RegistryCard key={index} device={device} />)}
+            </div>
+          </section>
+        ) : null}
+
         {parsed.identities.length > 0 && active === "overview" ? (
           <section className="devices-section">
             <div className="section-title">
@@ -263,6 +290,7 @@ function App() {
     </main>
   );
 }
+
 
 
 
