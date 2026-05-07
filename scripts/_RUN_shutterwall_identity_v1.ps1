@@ -203,4 +203,5 @@ foreach($id in @($identities)){
   Write-Host ("DEVICE_IDENTITY :: " + $id.ip + " :: " + $id.label + " :: confidence=" + $id.confidence_percent + "% :: vendor=" + $id.vendor_hint + " :: user_label=" + $id.user_label) -ForegroundColor Cyan
 }
 & "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_registry_v1.ps1") -Mode update -RepoRoot $RepoRoot -RunRoot $RunRoot
+& "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_registry_v1.ps1") -Mode update -RepoRoot $RepoRoot -RunRoot $RunRoot
 Write-Host "SHUTTERWALL_IDENTITY_V1_OK" -ForegroundColor Green
