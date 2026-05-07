@@ -497,3 +497,47 @@ html, body, #root {
   border: 1px solid rgba(140, 150, 170, 0.40);
   color: #c8d5ee;
 }
+.sidebar { height:auto; overflow:visible; }
+.main-panel { height:auto; overflow:visible; padding:20px; }
+
+.posture-metric {
+  position: relative;
+}
+
+.posture-metric::before {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 4px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  background: #8fb3ff;
+}
+
+.posture-metric.trusted::before {
+  background: #5cff9d;
+}
+
+.posture-metric.review::before {
+  background: #ffd27a;
+}
+
+.posture-metric.unknown::before {
+  background: #9aa8bf;
+}
+
+.posture-metric.blocked::before {
+  background: #ff7777;
+}
+
+.posture-metric.alert::before {
+  background: #ffb347;
+}
+
+.posture-metric.neutral::before {
+  background: #8fb3ff;
+}
+
+.posture-metric.wide {
+  grid-column: span 2;
+}

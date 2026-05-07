@@ -80,7 +80,11 @@ function parseOutput(text) {
     labeledCount: "",
     needsReview: "",
     latestAlerts: "",
-    baselineExists: ""
+    baselineExists: "",
+    trustedCount: "",
+    reviewTrustCount: "",
+    blockedCount: "",
+    unknownTrustCount: ""
   };
 
   lines.forEach((line) => {
@@ -91,6 +95,10 @@ function parseOutput(text) {
     if (line.startsWith("NEEDS_REVIEW_COUNT:")) posture.needsReview = line.replace("NEEDS_REVIEW_COUNT:", "").trim();
     if (line.startsWith("LATEST_ALERT_COUNT:")) posture.latestAlerts = line.replace("LATEST_ALERT_COUNT:", "").trim();
     if (line.startsWith("BASELINE_EXISTS:")) posture.baselineExists = line.replace("BASELINE_EXISTS:", "").trim();
+    if (line.startsWith("TRUSTED_COUNT:")) posture.trustedCount = line.replace("TRUSTED_COUNT:", "").trim();
+    if (line.startsWith("REVIEW_TRUST_COUNT:")) posture.reviewTrustCount = line.replace("REVIEW_TRUST_COUNT:", "").trim();
+    if (line.startsWith("BLOCKED_COUNT:")) posture.blockedCount = line.replace("BLOCKED_COUNT:", "").trim();
+    if (line.startsWith("UNKNOWN_TRUST_COUNT:")) posture.unknownTrustCount = line.replace("UNKNOWN_TRUST_COUNT:", "").trim();
   });
 
   const summaryLines = lines.filter((line) =>
@@ -225,10 +233,13 @@ export default function App() {
             </div>
             <p>{parsed.posture.recommended}</p>
             <div className="posture-grid">
-              <div><strong>{parsed.posture.deviceCount || "0"}</strong><span>Known devices</span></div>
-              <div><strong>{parsed.posture.labeledCount || "0"}</strong><span>Named devices</span></div>
-              <div><strong>{parsed.posture.needsReview || "0"}</strong><span>Need review</span></div>
-              <div><strong>{parsed.posture.latestAlerts || "0"}</strong><span>Latest alerts</span></div>
+              <div className="posture-metric neutral"><strong>{parsed.posture.deviceCount || "0"}</strong><span>Known devices</span></div>
+              <div className="posture-metric trusted"><strong>{parsed.posture.trustedCount || "0"}</strong><span>Trusted</span></div>
+              <div className="posture-metric review"><strong>{parsed.posture.reviewTrustCount || "0"}</strong><span>In review</span></div>
+              <div className="posture-metric unknown"><strong>{parsed.posture.unknownTrustCount || "0"}</strong><span>Unknown</span></div>
+              <div className="posture-metric blocked"><strong>{parsed.posture.blockedCount || "0"}</strong><span>Blocked</span></div>
+              <div className="posture-metric alert"><strong>{parsed.posture.latestAlerts || "0"}</strong><span>Latest alerts</span></div>
+              <div className="posture-metric review wide"><strong>{parsed.posture.needsReview || "0"}</strong><span>Need review</span></div>
             </div>
           </section>
         ) : null}
