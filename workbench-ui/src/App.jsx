@@ -7,6 +7,7 @@ const sections = {
     title: "Overview",
     desc: "Start here. Understand your local network without changing anything.",
     actions: [
+      { cmd: "posture", title: "Protection Status", desc: "Shows your current protection mode and recommended next action." },
       { cmd: "quickstart", title: "Quickstart", desc: "Runs safe discovery and a home-safe preview." },
       { cmd: "inspect", title: "Inspect", desc: "Discovers devices. No firewall changes." },
       { cmd: "identity", title: "Identity", desc: "Labels devices with type and confidence." },
@@ -71,6 +72,26 @@ function parseOutput(text) {
       };
     });
 
+  const posture = {
+    mode: "",
+    recommended: "",
+    deviceCount: "",
+    labeledCount: "",
+    needsReview: "",
+    latestAlerts: "",
+    baselineExists: ""
+  };
+
+  lines.forEach((line) => {
+    if (line.startsWith("POSTURE_MODE:")) posture.mode = line.replace("POSTURE_MODE:", "").trim();
+    if (line.startsWith("RECOMMENDED_ACTION:")) posture.recommended = line.replace("RECOMMENDED_ACTION:", "").trim();
+    if (line.startsWith("DEVICE_COUNT:")) posture.deviceCount = line.replace("DEVICE_COUNT:", "").trim();
+    if (line.startsWith("LABELED_DEVICE_COUNT:")) posture.labeledCount = line.replace("LABELED_DEVICE_COUNT:", "").trim();
+    if (line.startsWith("NEEDS_REVIEW_COUNT:")) posture.needsReview = line.replace("NEEDS_REVIEW_COUNT:", "").trim();
+    if (line.startsWith("LATEST_ALERT_COUNT:")) posture.latestAlerts = line.replace("LATEST_ALERT_COUNT:", "").trim();
+    if (line.startsWith("BASELINE_EXISTS:")) posture.baselineExists = line.replace("BASELINE_EXISTS:", "").trim();
+  });
+
   const summaryLines = lines.filter((line) =>
     line.startsWith("BASELINE_PATH:") ||
     line.startsWith("BASELINE_HASH:") ||
@@ -103,6 +124,7 @@ function parseOutput(text) {
     alerts,
     identities,
     registryDevices,
+    posture,
     summaryLines,
   };
 }
@@ -189,6 +211,22 @@ export default function App() {
           <h1>{current.title}</h1>
           <p className="sub">{current.desc}</p>
         </section>
+
+        {parsed.posture.mode && active === "overview" ? (
+          <section className="posture-section">
+            <div className="posture-header">
+              <span>Protection Status</span>
+              <strong>{parsed.posture.mode}</strong>
+            </div>
+            <p>{parsed.posture.recommended}</p>
+            <div className="posture-grid">
+              <div><strong>{parsed.posture.deviceCount || "0"}</strong><span>Known devices</span></div>
+              <div><strong>{parsed.posture.labeledCount || "0"}</strong><span>Named devices</span></div>
+              <div><strong>{parsed.posture.needsReview || "0"}</strong><span>Need review</span></div>
+              <div><strong>{parsed.posture.latestAlerts || "0"}</strong><span>Latest alerts</span></div>
+            </div>
+          </section>
+        ) : null}
 
         {parsed.registryDevices.length > 0 && active === "overview" ? (
           <section className="registry-section">

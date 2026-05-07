@@ -399,3 +399,63 @@ html, body, #root {
   color: #d5e0f3;
   font-size: 13px;
 }
+
+.posture-section {
+  background: linear-gradient(135deg, rgba(38, 80, 140, 0.28), rgba(12, 18, 32, 0.95));
+  border: 1px solid #3f6fb5;
+  border-radius: 22px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.posture-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.posture-header span {
+  color: #9eb8ff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: 12px;
+}
+
+.posture-header strong {
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.posture-section p {
+  color: #d5e0f3;
+  margin: 0 0 16px 0;
+  line-height: 1.45;
+}
+
+.posture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.posture-grid div {
+  background: rgba(5, 8, 20, 0.65);
+  border: 1px solid rgba(143, 179, 255, 0.24);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.posture-grid strong {
+  display: block;
+  color: #ffffff;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.posture-grid span {
+  color: #c8d5ee;
+  font-size: 13px;
+}

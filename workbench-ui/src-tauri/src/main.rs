@@ -3,7 +3,7 @@ use std::process::Command;
 
 #[tauri::command]
 fn run_shutterwall(cmd: String) -> String {
-    let allowed = ["quickstart","inspect","baseline","diff","identity","registry","watch 1","scan","apply","undo","doctor","version"];
+    let allowed = ["quickstart","inspect","baseline","diff","identity","registry","posture","watch 1","scan","apply","undo","doctor","version"];
     if !allowed.contains(&cmd.as_str()) { return format!("DENIED_COMMAND: {}", cmd); }
     let command_text = format!("shutterwall {}", cmd);
     let output = Command::new("powershell.exe").args(["-NoProfile","-ExecutionPolicy","Bypass","-Command",&command_text]).output();

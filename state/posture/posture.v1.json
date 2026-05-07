@@ -1,0 +1,15 @@
+{
+    "schema":  "shutterwall.protection_posture.v1",
+    "updated_at_utc":  "2026-05-07T00:42:50.0210763Z",
+    "protection_mode":  "Review Needed",
+    "recommended_action":  "Review the latest network change before re-baselining.",
+    "baseline_exists":  true,
+    "device_count":  5,
+    "labeled_device_count":  2,
+    "needs_review_count":  3,
+    "unknown_trust_count":  5,
+    "changed_device_count":  0,
+    "latest_alert_count":  1,
+    "latest_network_state":  "NETWORK_STATE_CHANGED",
+    "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260506_182330Z.json"
+}

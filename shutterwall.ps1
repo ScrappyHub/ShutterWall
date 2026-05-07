@@ -120,6 +120,11 @@ switch ($Command) {
   "watch-latest" { & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_watch_daemon_control_v1.ps1") -Mode latest -RepoRoot $RepoRoot; return }
 
   "watch" { Invoke-Watch; return }
+  "posture" {
+    & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_posture_v1.ps1") -RepoRoot $RepoRoot
+    return
+  }
+
   "registry" {
     & $PSExe -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_registry_v1.ps1") -Mode list -RepoRoot $RepoRoot
     return
