@@ -1,28 +1,28 @@
 {
     "schema":  "shutterwall.device_registry.v1",
-    "updated_at_utc":  "2026-05-06T22:36:55.0550143Z",
+    "updated_at_utc":  "2026-05-07T04:36:42.3957327Z",
     "devices":  [
                     {
-                        "ip":  "192.168.4.36",
-                        "user_label":  "",
-                        "engine_guess":  "Needs Review",
-                        "confidence_percent":  30,
+                        "ip":  "192.168.4.1",
+                        "user_label":  "Printer",
+                        "engine_guess":  "Likely Router / Gateway",
+                        "confidence_percent":  55,
                         "vendor_hint":  "unknown",
-                        "trust_state":  "unknown",
+                        "trust_state":  "trusted",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-07T04:36:42.2978610Z",
                         "change_count":  0,
                         "notes":  ""
                     },
                     {
-                        "ip":  "192.168.4.39",
+                        "ip":  "192.168.4.24",
                         "user_label":  "",
                         "engine_guess":  "Needs Review",
                         "confidence_percent":  30,
                         "vendor_hint":  "unknown",
                         "trust_state":  "unknown",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-07T03:16:46.7063696Z",
                         "change_count":  0,
                         "notes":  ""
                     },
@@ -34,33 +34,31 @@
                         "vendor_hint":  "unknown",
                         "trust_state":  "review",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-07T04:36:42.3942267Z",
                         "change_count":  0,
-                        "notes":  "",
-                        "last_trust_update_utc":  "2026-05-07T02:12:47.9274045Z"
+                        "notes":  ""
                     },
                     {
-                        "ip":  "192.168.4.1",
-                        "user_label":  "Printer",
-                        "engine_guess":  "Likely Router / Gateway",
-                        "confidence_percent":  55,
-                        "vendor_hint":  "unknown",
-                        "trust_state":  "trusted",
-                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "change_count":  0,
-                        "notes":  "",
-                        "last_trust_update_utc":  "2026-05-07T02:12:46.1986006Z"
-                    },
-                    {
-                        "ip":  "192.168.4.24",
+                        "ip":  "192.168.4.36",
                         "user_label":  "",
                         "engine_guess":  "Needs Review",
                         "confidence_percent":  30,
                         "vendor_hint":  "unknown",
                         "trust_state":  "unknown",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-07T03:16:46.7063696Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.39",
+                        "user_label":  "",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-07T03:16:46.7063696Z",
                         "change_count":  0,
                         "notes":  ""
                     }
