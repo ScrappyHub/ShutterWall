@@ -176,6 +176,18 @@ function IdentityCard({ device }) {
   );
 }
 
+function DeviceRecommendation({ device }) {
+  const trust = (device.trustBadge || "unknown").toLowerCase();
+
+  let text = "Review this device before trusting it.";
+  if (trust === "trusted") text = "This device is recognized and trusted on this network.";
+  if (trust === "review") text = "Keep this device under review until you confirm what it is.";
+  if (trust === "blocked") text = "This device is marked suspicious. Use enforcement only after review.";
+  if (trust === "unknown") text = "This device has not been classified yet.";
+
+  return <div className="device-recommendation">{text}</div>;
+}
+
 function RegistryCard({ device, onTrust }) {
   return (
     <div className="registry-card">
@@ -191,11 +203,13 @@ function RegistryCard({ device, onTrust }) {
         <span>Last seen: {device.lastSeen || "unknown"}</span>
       </div>
 
+      <DeviceRecommendation device={device} />
+
       <div className="registry-actions">
-        <button type="button" className="trust-action trusted" onClick={() => onTrust(device.ip, "trusted")}>Trust</button>
-        <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Review</button>
-        <button type="button" className="trust-action blocked" onClick={() => onTrust(device.ip, "blocked")}>Block</button>
-        <button type="button" className="trust-action unknown" onClick={() => onTrust(device.ip, "unknown")}>Ignore</button>
+        <button type="button" className="trust-action trusted" onClick={() => onTrust(device.ip, "trusted")}>I Recognize This</button>
+        <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Needs Review</button>
+        <button type="button" className="trust-action blocked" onClick={() => onTrust(device.ip, "blocked")}>Mark Suspicious</button>
+        <button type="button" className="trust-action unknown" onClick={() => onTrust(device.ip, "unknown")}>Ignore For Now</button>
       </div>
     </div>
   );

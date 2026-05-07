@@ -708,3 +708,22 @@ pre {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.device-recommendation {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(143, 179, 255, 0.08);
+  border: 1px solid rgba(143, 179, 255, 0.18);
+  color: #d5e0f3;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.registry-actions {
+  grid-template-columns: 1fr;
+}
+
+.trust-action {
+  text-align: center;
+}
