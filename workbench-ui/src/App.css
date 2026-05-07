@@ -727,3 +727,39 @@ pre {
 .trust-action {
   text-align: center;
 }
+
+.review-guidance {
+  background: linear-gradient(135deg, rgba(38, 80, 140, 0.22), rgba(12, 18, 32, 0.95));
+  border: 1px solid #3f6fb5;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.review-guidance strong {
+  display: block;
+  color: #ffffff;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.review-guidance p {
+  color: #d5e0f3;
+  margin: 0 0 14px 0;
+  line-height: 1.45;
+}
+
+.review-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.review-steps span {
+  background: rgba(5, 8, 20, 0.65);
+  border: 1px solid rgba(143, 179, 255, 0.20);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #cfe0ff;
+  font-weight: 800;
+}

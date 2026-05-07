@@ -14,6 +14,14 @@ const sections = {
       { cmd: "registry", title: "Device Registry", desc: "Shows persistent network memory: labels, trust state, changes, and last seen." },
     ],
   },
+  review: {
+    title: "Review",
+    desc: "Classify devices on your network and decide what belongs.",
+    actions: [
+      { cmd: "registry", title: "Load Devices", desc: "Open persistent network memory for review." },
+      { cmd: "identity", title: "Refresh Identity", desc: "Update device identity hints before reviewing." },
+    ],
+  },
   security: {
     title: "Security",
     desc: "Create a trusted baseline, compare against it, and monitor for changes.",
@@ -327,10 +335,22 @@ export default function App() {
           </section>
         ) : null}
 
-        {parsed.registryDevices.length > 0 && active === "overview" ? (
+        {active === "review" ? (
+          <section className="review-guidance">
+            <strong>Device Review</strong>
+            <p>Only mark a device trusted when you recognize what it is. Unknown devices stay in review until you label or trust them.</p>
+            <div className="review-steps">
+              <span>1. Identify the device</span>
+              <span>2. Label it</span>
+              <span>3. Trust, review, or mark suspicious</span>
+            </div>
+          </section>
+        ) : null}
+
+        {parsed.registryDevices.length > 0 && active === "review" ? (
           <section className="registry-section">
             <div className="section-title">
-              <strong>Network Memory</strong>
+              <strong>Registered Devices</strong>
               <span>{parsed.registryDevices.length} registered device(s)</span>
             </div>
             <div className="registry-grid">
@@ -339,7 +359,7 @@ export default function App() {
           </section>
         ) : null}
 
-        {parsed.identities.length > 0 && active === "overview" ? (
+        {parsed.identities.length > 0 && active === "review" ? (
           <section className="devices-section">
             <div className="section-title">
               <strong>Detected Devices</strong>
