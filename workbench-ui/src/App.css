@@ -541,3 +541,45 @@ html, body, #root {
 .posture-metric.wide {
   grid-column: span 2;
 }
+
+.registry-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.trust-action {
+  min-height: auto;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #111827;
+  color: #dce8ff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.trust-action.trusted {
+  color: #9cffb8;
+  border-color: rgba(40,180,90,0.45);
+  background: rgba(40,180,90,0.10);
+}
+
+.trust-action.review {
+  color: #ffd27a;
+  border-color: rgba(255,185,0,0.40);
+  background: rgba(255,185,0,0.10);
+}
+
+.trust-action.blocked {
+  color: #ff9d9d;
+  border-color: rgba(255,70,70,0.45);
+  background: rgba(255,70,70,0.10);
+}
+
+.trust-action.unknown {
+  color: #c8d5ee;
+  border-color: rgba(140,150,170,0.40);
+  background: rgba(140,150,170,0.10);
+}

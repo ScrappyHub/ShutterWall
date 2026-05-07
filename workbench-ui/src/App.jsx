@@ -155,7 +155,7 @@ function IdentityCard({ device }) {
   );
 }
 
-function RegistryCard({ device }) {
+function RegistryCard({ device, onTrust }) {
   return (
     <div className="registry-card">
       <strong>{device.name}</strong>
@@ -168,6 +168,13 @@ function RegistryCard({ device }) {
         <span>Protection State: {device.trust || "unknown"}</span>
         <span>Changes: {device.changes || "0"}</span>
         <span>Last seen: {device.lastSeen || "unknown"}</span>
+      </div>
+
+      <div className="registry-actions">
+        <button type="button" className="trust-action trusted" onClick={() => onTrust(device.ip, "trusted")}>Trust</button>
+        <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Review</button>
+        <button type="button" className="trust-action blocked" onClick={() => onTrust(device.ip, "blocked")}>Block</button>
+        <button type="button" className="trust-action unknown" onClick={() => onTrust(device.ip, "unknown")}>Ignore</button>
       </div>
     </div>
   );
@@ -191,6 +198,31 @@ export default function App() {
     try {
       const result = await invoke("run_shutterwall", { cmd });
       setOutput(String(result || "NO_OUTPUT"));
+    } catch (err) {
+      setOutput("UI_COMMAND_FAILED:\n" + String(err));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  async function setDeviceTrust(ip, trustState) {
+    const cmd = "trust-set " + ip + " " + trustState;
+    setRunning(true);
+    setLastCommand("shutterwall " + cmd);
+    setOutput("RUNNING: shutterwall " + cmd + "\n");
+
+    try {
+      const trustResult = await invoke("run_shutterwall", { cmd });
+      const registryResult = await invoke("run_shutterwall", { cmd: "registry" });
+      const postureResult = await invoke("run_shutterwall", { cmd: "posture" });
+
+      setOutput(
+        String(trustResult || "") +
+        "\n" +
+        String(registryResult || "") +
+        "\n" +
+        String(postureResult || "")
+      );
     } catch (err) {
       setOutput("UI_COMMAND_FAILED:\n" + String(err));
     } finally {
@@ -251,7 +283,7 @@ export default function App() {
               <span>{parsed.registryDevices.length} registered device(s)</span>
             </div>
             <div className="registry-grid">
-              {parsed.registryDevices.map((device, index) => <RegistryCard key={index} device={device} />)}
+              {parsed.registryDevices.map((device, index) => <RegistryCard key={index} device={device} onTrust={setDeviceTrust} />)}
             </div>
           </section>
         ) : null}
