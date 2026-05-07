@@ -18,7 +18,7 @@ const sections = {
     title: "Review",
     desc: "Classify devices on your network and decide what belongs.",
     actions: [
-      { cmd: "registry", title: "Load Devices", desc: "Open persistent network memory for review." },
+      { cmd: "review", title: "Open Review", desc: "Load remembered devices, latest scan time, diffs, alerts, and next actions." },
       { cmd: "identity", title: "Refresh Identity", desc: "Update device identity hints before reviewing." },
     ],
   },
@@ -116,6 +116,38 @@ function parseOutput(text) {
     if (line.startsWith("UNKNOWN_TRUST_COUNT:")) posture.unknownTrustCount = line.replace("UNKNOWN_TRUST_COUNT:", "").trim();
   });
 
+  const reviewDevices = lines
+    .filter((line) => line.trim().startsWith("REVIEW_DEVICE ::"))
+    .map((line) => {
+      const parts = line.trim().split("::").map((p) => p.trim());
+      return {
+        ip: parts[1] || "",
+        label: parts[2] || "Unrecognized Device",
+        trust: (parts[3] || "").replace("trust=", ""),
+        changes: (parts[4] || "").replace("changes=", ""),
+        lastSeen: (parts[5] || "").replace("last_seen=", ""),
+        action: (parts[6] || "").replace("action=", ""),
+      };
+    });
+
+  const review = {
+    posture: "",
+    recommended: "",
+    deviceCount: "",
+    lastScanned: "",
+    latestDiffPath: "",
+    alertHistoryCount: "",
+  };
+
+  lines.forEach((line) => {
+    if (line.startsWith("REVIEW_POSTURE:")) review.posture = line.replace("REVIEW_POSTURE:", "").trim();
+    if (line.startsWith("REVIEW_RECOMMENDED_ACTION:")) review.recommended = line.replace("REVIEW_RECOMMENDED_ACTION:", "").trim();
+    if (line.startsWith("REVIEW_DEVICE_COUNT:")) review.deviceCount = line.replace("REVIEW_DEVICE_COUNT:", "").trim();
+    if (line.startsWith("REVIEW_LAST_SCANNED_UTC:")) review.lastScanned = line.replace("REVIEW_LAST_SCANNED_UTC:", "").trim();
+    if (line.startsWith("REVIEW_LATEST_DIFF_PATH:")) review.latestDiffPath = line.replace("REVIEW_LATEST_DIFF_PATH:", "").trim();
+    if (line.startsWith("REVIEW_ALERT_HISTORY_COUNT:")) review.alertHistoryCount = line.replace("REVIEW_ALERT_HISTORY_COUNT:", "").trim();
+  });
+
   const alertItems = lines
     .filter((line) => line.trim().startsWith("ALERT_CENTER ::"))
     .map((line) => {
@@ -162,6 +194,8 @@ function parseOutput(text) {
     identities,
     registryDevices,
     posture,
+    review,
+    reviewDevices,
     alertItems,
     summaryLines,
   };
@@ -213,6 +247,29 @@ function RegistryCard({ device, onTrust }) {
 
       <DeviceRecommendation device={device} />
 
+      <div className="registry-actions">
+        <button type="button" className="trust-action trusted" onClick={() => onTrust(device.ip, "trusted")}>I Recognize This</button>
+        <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Needs Review</button>
+        <button type="button" className="trust-action blocked" onClick={() => onTrust(device.ip, "blocked")}>Mark Suspicious</button>
+        <button type="button" className="trust-action unknown" onClick={() => onTrust(device.ip, "unknown")}>Ignore For Now</button>
+      </div>
+    </div>
+  );
+}
+
+function ReviewDeviceCard({ device, onTrust }) {
+  return (
+    <div className={"review-device-card trust-" + ((device.trust || "unknown").toLowerCase())}>
+      <div className="review-device-top">
+        <strong>{device.label}</strong>
+        <span>{device.trust || "unknown"}</span>
+      </div>
+      <div className="review-device-ip">IP: {device.ip}</div>
+      <p>{device.action || "Review this device."}</p>
+      <div className="review-device-meta">
+        <span>Changes: {device.changes || "0"}</span>
+        <span>Last seen: {device.lastSeen || "unknown"}</span>
+      </div>
       <div className="registry-actions">
         <button type="button" className="trust-action trusted" onClick={() => onTrust(device.ip, "trusted")}>I Recognize This</button>
         <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Needs Review</button>
@@ -331,6 +388,33 @@ export default function App() {
               <div className="posture-metric blocked"><strong>{parsed.posture.blockedCount || "0"}</strong><span>Blocked</span></div>
               <div className="posture-metric alert"><strong>{parsed.posture.latestAlerts || "0"}</strong><span>Latest alerts</span></div>
               <div className="posture-metric review wide"><strong>{parsed.posture.needsReview || "0"}</strong><span>Need review</span></div>
+            </div>
+          </section>
+        ) : null}
+
+        {active === "review" && parsed.review.posture ? (
+          <section className="review-control-room">
+            <div>
+              <span>Review State</span>
+              <strong>{parsed.review.posture}</strong>
+              <p>{parsed.review.recommended}</p>
+            </div>
+            <div className="review-control-grid">
+              <div><strong>{parsed.review.deviceCount || "0"}</strong><span>Remembered devices</span></div>
+              <div><strong>{parsed.review.alertHistoryCount || "0"}</strong><span>Recorded alerts</span></div>
+              <div><strong>{parsed.review.lastScanned || "unknown"}</strong><span>Last scanned</span></div>
+            </div>
+          </section>
+        ) : null}
+
+        {active === "review" && parsed.reviewDevices.length > 0 ? (
+          <section className="review-device-section">
+            <div className="section-title">
+              <strong>Device Decisions</strong>
+              <span>{parsed.reviewDevices.length} device(s)</span>
+            </div>
+            <div className="review-device-grid">
+              {parsed.reviewDevices.map((device, index) => <ReviewDeviceCard key={index} device={device} onTrust={setDeviceTrust} />)}
             </div>
           </section>
         ) : null}

@@ -159,6 +159,7 @@ function Show-Help {
   Write-Host "  shutterwall label-list                         # list user-owned device labels"
   Write-Host "  shutterwall label-remove <ip>                  # remove user-owned device label"
   Write-Host "  shutterwall registry                           # list persistent device registry"
+  Write-Host "  shutterwall review                             # review remembered devices, posture, diffs, and alerts"
   Write-Host "  shutterwall trust-set <ip> <trusted|review|blocked>"
   Write-Host "  shutterwall posture                            # show protection posture and next action"
   Write-Host "  shutterwall alerts                             # show persistent alert center"
@@ -252,6 +253,11 @@ switch ($Command) {
       "-Ip",([string]$CommandArgs[0]),
       "-RepoRoot",$RepoRoot
     )
+    return
+  }
+
+  "review" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_review_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
   }
 

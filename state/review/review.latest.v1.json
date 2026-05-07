@@ -1,0 +1,59 @@
+{
+    "schema":  "shutterwall.review.v1",
+    "updated_at_utc":  "2026-05-07T22:06:05.8863852Z",
+    "posture_mode":  "Review Needed",
+    "recommended_action":  "Review the latest network change before re-baselining.",
+    "device_count":  5,
+    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\82ee4672afce2b0d273e3168f6d6efa18cdc847a1b6640a91611669927b72ad2",
+    "last_scanned_utc":  "2026-05-07T21:13:49.9705054Z",
+    "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260507_202905Z.json",
+    "latest_alert_count":  1,
+    "alert_history_count":  2,
+    "devices":  [
+                    {
+                        "ip":  "192.168.4.36",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-05-07T20:17:25.5549466Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.39",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-05-07T20:17:25.5549466Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.30",
+                        "label":  "Garage Camera",
+                        "trust_state":  "trusted",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-05-07T20:17:25.5549466Z",
+                        "change_count":  0,
+                        "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
+                    },
+                    {
+                        "ip":  "192.168.4.1",
+                        "label":  "Printer",
+                        "trust_state":  "trusted",
+                        "engine_guess":  "Likely Router / Gateway",
+                        "last_seen_utc":  "2026-05-07T20:17:25.5549466Z",
+                        "change_count":  0,
+                        "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
+                    },
+                    {
+                        "ip":  "192.168.4.24",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-05-07T20:17:25.5549466Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    }
+                ]
+}
