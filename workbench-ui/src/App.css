@@ -459,3 +459,41 @@ html, body, #root {
   color: #c8d5ee;
   font-size: 13px;
 }
+
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+
+.trust-trusted {
+  background: rgba(40, 180, 90, 0.18);
+  border: 1px solid rgba(40, 180, 90, 0.45);
+  color: #9cffb8;
+}
+
+.trust-review {
+  background: rgba(255, 185, 0, 0.16);
+  border: 1px solid rgba(255, 185, 0, 0.40);
+  color: #ffd27a;
+}
+
+.trust-blocked {
+  background: rgba(255, 70, 70, 0.18);
+  border: 1px solid rgba(255, 70, 70, 0.45);
+  color: #ff9d9d;
+}
+
+.trust-unknown {
+  background: rgba(140, 150, 170, 0.18);
+  border: 1px solid rgba(140, 150, 170, 0.40);
+  color: #c8d5ee;
+}

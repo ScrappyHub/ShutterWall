@@ -1,10 +1,12 @@
 param(
   [Parameter(Mandatory=$true)]
-  [ValidateSet("update","list")]
+  [ValidateSet("update","list","trust")]
   [string]$Mode,
 
   [string]$RepoRoot = "C:\dev\shutterwall",
-  [string]$RunRoot = ""
+  [string]$RunRoot,
+  [string]$Ip = "",
+  [string]$TrustState = ""
 )
 
 Set-StrictMode -Version Latest
@@ -132,6 +134,42 @@ if($Mode -eq "update"){
   return
 }
 
+
+if($Mode -eq "trust"){
+  if([string]::IsNullOrWhiteSpace($Ip)){
+    throw "MISSING_IP"
+  }
+
+  if([string]::IsNullOrWhiteSpace($TrustState)){
+    throw "MISSING_TRUST_STATE"
+  }
+
+  $allowed = @("trusted","review","blocked")
+  if($allowed -notcontains $TrustState){
+    throw ("INVALID_TRUST_STATE: " + $TrustState)
+  }
+
+  if(-not (Test-Path -LiteralPath $RegistryPath)){
+    throw ("MISSING_REGISTRY: " + $RegistryPath)
+  }
+
+  $doc = Get-Content -LiteralPath $RegistryPath -Raw | ConvertFrom-Json
+
+  foreach($device in @($doc.devices)){
+    if(([string]$device.ip) -eq $Ip){
+      $device.trust_state = $TrustState
+      $device.last_trust_update_utc = [DateTime]::UtcNow.ToString("o")
+    }
+  }
+
+  Write-Utf8NoBomLf -Path $RegistryPath -Text ($doc | ConvertTo-Json -Depth 20)
+
+  Write-Host ("DEVICE_TRUST_SET :: " + $Ip + " :: " + $TrustState)
+  Write-Host ("DEVICE_REGISTRY_PATH: " + $RegistryPath)
+  Write-Host "SHUTTERWALL_DEVICE_TRUST_SET_OK"
+
+  return
+}
 if($Mode -eq "list"){
   Write-Host ("DEVICE_REGISTRY_PATH: " + $RegistryFile)
   foreach($d in @($Registry.devices)){

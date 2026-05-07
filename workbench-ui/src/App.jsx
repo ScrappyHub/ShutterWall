@@ -67,6 +67,7 @@ function parseOutput(text) {
         ip: parts[1] || "",
         name: parts[2] || "Unknown Device",
         trust: (parts[3] || "").replace("trust=", ""),
+        trustBadge: ((parts[3] || "").replace("trust=", "") || "unknown").toLowerCase(),
         changes: (parts[4] || "").replace("changes=", ""),
         lastSeen: (parts[5] || "").replace("last_seen=", ""),
       };
@@ -151,8 +152,12 @@ function RegistryCard({ device }) {
     <div className="registry-card">
       <strong>{device.name}</strong>
       <span className="registry-ip">IP: {device.ip}</span>
+      <div className={"trust-pill trust-" + (device.trustBadge || "unknown")}>
+        {device.trust || "unknown"}
+      </div>
+
       <div className="registry-meta">
-        <span>Trust: {device.trust || "unknown"}</span>
+        <span>Protection State: {device.trust || "unknown"}</span>
         <span>Changes: {device.changes || "0"}</span>
         <span>Last seen: {device.lastSeen || "unknown"}</span>
       </div>
