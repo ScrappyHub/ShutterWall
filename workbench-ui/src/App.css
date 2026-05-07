@@ -655,3 +655,56 @@ html, body, #root {
   color: #d5e0f3;
   margin: 0;
 }
+
+/* APP_SCROLL_LAYOUT_FIX_V2 */
+
+.app-shell {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 60px;
+}
+
+.command-output {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 420px;
+}
+
+.activity-section {
+  overflow: visible;
+}
+
+.alert-list {
+  overflow: visible;
+}
+
+.registry-list {
+  overflow: visible;
+}
+
+.section-grid {
+  overflow: visible;
+}
+
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
