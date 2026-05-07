@@ -37,8 +37,15 @@ if(Test-Path -LiteralPath $RegistryPath){
 
 $deviceCount = @($devices).Count
 $labeledCount = @($devices | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.user_label) }).Count
-$needsReviewCount = @($devices | Where-Object { ([string]$_.engine_guess) -eq "Needs Review" -and [string]::IsNullOrWhiteSpace([string]$_.user_label) }).Count
+$needsReviewCount = @($devices | Where-Object {
+  ([string]$_.trust_state) -eq "unknown" -or
+  ([string]$_.trust_state) -eq "review" -or
+  (([string]$_.engine_guess) -eq "Needs Review" -and [string]::IsNullOrWhiteSpace([string]$_.user_label))
+}).Count
 $unknownTrustCount = @($devices | Where-Object { ([string]$_.trust_state) -eq "unknown" }).Count
+$trustedCount = @($devices | Where-Object { ([string]$_.trust_state) -eq "trusted" }).Count
+$reviewTrustCount = @($devices | Where-Object { ([string]$_.trust_state) -eq "review" }).Count
+$blockedCount = @($devices | Where-Object { ([string]$_.trust_state) -eq "blocked" }).Count
 $changedDeviceCount = @($devices | Where-Object { [int]$_.change_count -gt 0 }).Count
 
 $baselineExists = Test-Path -LiteralPath $BaselinePath
@@ -100,6 +107,9 @@ $posture = [ordered]@{
   labeled_device_count = [int]$labeledCount
   needs_review_count = [int]$needsReviewCount
   unknown_trust_count = [int]$unknownTrustCount
+  trusted_count = [int]$trustedCount
+  review_trust_count = [int]$reviewTrustCount
+  blocked_count = [int]$blockedCount
   changed_device_count = [int]$changedDeviceCount
   latest_alert_count = [int]$latestAlertCount
   latest_network_state = $latestNetworkState
@@ -114,6 +124,9 @@ Write-Host ("DEVICE_COUNT: " + $posture.device_count)
 Write-Host ("LABELED_DEVICE_COUNT: " + $posture.labeled_device_count)
 Write-Host ("NEEDS_REVIEW_COUNT: " + $posture.needs_review_count)
 Write-Host ("UNKNOWN_TRUST_COUNT: " + $posture.unknown_trust_count)
+Write-Host ("TRUSTED_COUNT: " + $posture.trusted_count)
+Write-Host ("REVIEW_TRUST_COUNT: " + $posture.review_trust_count)
+Write-Host ("BLOCKED_COUNT: " + $posture.blocked_count)
 Write-Host ("CHANGED_DEVICE_COUNT: " + $posture.changed_device_count)
 Write-Host ("LATEST_ALERT_COUNT: " + $posture.latest_alert_count)
 Write-Host ("BASELINE_EXISTS: " + $posture.baseline_exists)
