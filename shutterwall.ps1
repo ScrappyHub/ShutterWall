@@ -261,6 +261,30 @@ switch ($Command) {
     return
   }
 
+  "review-latest" {
+    $ReviewPath = Join-Path $RepoRoot "state\review\review.latest.v1.json"
+    if(-not (Test-Path -LiteralPath $ReviewPath -PathType Leaf)){
+      Invoke-Script -ScriptName "scripts\_RUN_shutterwall_review_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+      return
+    }
+
+    $doc = Get-Content -LiteralPath $ReviewPath -Raw | ConvertFrom-Json
+    Write-Host ("REVIEW_PATH: " + $ReviewPath)
+    Write-Host ("REVIEW_POSTURE: " + $doc.posture_mode)
+    Write-Host ("REVIEW_RECOMMENDED_ACTION: " + $doc.recommended_action)
+    Write-Host ("REVIEW_DEVICE_COUNT: " + $doc.device_count)
+    Write-Host ("REVIEW_LAST_SCANNED_UTC: " + $doc.last_scanned_utc)
+    Write-Host ("REVIEW_LATEST_DIFF_PATH: " + $doc.latest_diff_path)
+    Write-Host ("REVIEW_ALERT_HISTORY_COUNT: " + $doc.alert_history_count)
+
+    foreach($d in @($doc.devices)){
+      Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: last_seen=" + $d.last_seen_utc + " :: action=" + $d.recommended_action)
+    }
+
+    Write-Host "SHUTTERWALL_REVIEW_LATEST_OK"
+    return
+  }
+
   "registry" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_registry_v1.ps1" -ExtraArgs @("-Mode","list","-RepoRoot",$RepoRoot)
     return

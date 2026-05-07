@@ -864,3 +864,62 @@ pre {
   font-size: 12px;
   margin-bottom: 12px;
 }
+
+/* REVIEW_COMPACT_LAYOUT_V1 */
+
+.review-control-grid div {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.review-control-grid strong {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-control-grid span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-device-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.review-device-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.review-device-top {
+  align-items: flex-start;
+}
+
+.review-device-top strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-device-top span {
+  flex-shrink: 0;
+}
+
+.review-device-ip {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-device-meta span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-device-card .registry-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.review-device-card .trust-action {
+  font-size: 12px;
+  padding: 8px;
+}

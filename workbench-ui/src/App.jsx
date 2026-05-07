@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
@@ -321,6 +321,20 @@ export default function App() {
     }
   }
 
+  async function loadReviewLatest() {
+    setRunning(true);
+    setLastCommand("shutterwall review-latest");
+
+    try {
+      const result = await invoke("run_shutterwall", { cmd: "review-latest" });
+      setOutput(String(result || "NO_OUTPUT"));
+    } catch (err) {
+      setOutput("UI_COMMAND_FAILED:\n" + String(err));
+    } finally {
+      setRunning(false);
+    }
+  }
+
   async function setDeviceTrust(ip, trustState) {
     const cmd = "trust-set " + ip + " " + trustState;
     setRunning(true);
@@ -345,6 +359,12 @@ export default function App() {
       setRunning(false);
     }
   }
+
+  useEffect(() => {
+    if (active === "review") {
+      loadReviewLatest();
+    }
+  }, [active]);
 
   return (
     <main className="app-layout">
@@ -419,7 +439,7 @@ export default function App() {
           </section>
         ) : null}
 
-        {active === "review" ? (
+        {active === "review" && parsed.reviewDevices.length === 0 ? (
           <section className="review-guidance">
             <strong>Device Review</strong>
             <p>Only mark a device trusted when you recognize what it is. Unknown devices stay in review until you label or trust them.</p>
