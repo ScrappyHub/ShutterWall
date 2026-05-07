@@ -32,6 +32,13 @@ const sections = {
       { cmd: "undo", title: "Undo Protection (Admin Required - Coming Soon)", desc: "Requires confirmation and administrator elevation. Removes ShutterWall firewall rules.", confirm: "UNDO" },
     ],
   },
+  activity: {
+    title: "Activity",
+    desc: "Review persistent alerts and recent protection events.",
+    actions: [
+      { cmd: "alerts", title: "Alert Center", desc: "Shows historical alerts, trust changes, and review events." },
+    ],
+  },
   evidence: {
     title: "Evidence",
     desc: "Review raw command output and evidence paths when needed.",
@@ -101,6 +108,19 @@ function parseOutput(text) {
     if (line.startsWith("UNKNOWN_TRUST_COUNT:")) posture.unknownTrustCount = line.replace("UNKNOWN_TRUST_COUNT:", "").trim();
   });
 
+  const alertItems = lines
+    .filter((line) => line.trim().startsWith("ALERT_CENTER ::"))
+    .map((line) => {
+      const parts = line.trim().split("::").map((p) => p.trim());
+      return {
+        severity: parts[1] || "info",
+        type: parts[2] || "alert",
+        ip: parts[3] || "",
+        message: parts[4] || "",
+        ts: parts[5] || "",
+      };
+    });
+
   const summaryLines = lines.filter((line) =>
     line.startsWith("BASELINE_PATH:") ||
     line.startsWith("BASELINE_HASH:") ||
@@ -134,6 +154,7 @@ function parseOutput(text) {
     identities,
     registryDevices,
     posture,
+    alertItems,
     summaryLines,
   };
 }
@@ -175,6 +196,22 @@ function RegistryCard({ device, onTrust }) {
         <button type="button" className="trust-action review" onClick={() => onTrust(device.ip, "review")}>Review</button>
         <button type="button" className="trust-action blocked" onClick={() => onTrust(device.ip, "blocked")}>Block</button>
         <button type="button" className="trust-action unknown" onClick={() => onTrust(device.ip, "unknown")}>Ignore</button>
+      </div>
+    </div>
+  );
+}
+
+function AlertCard({ alert }) {
+  return (
+    <div className={"alert-card severity-" + (alert.severity || "info")}>
+      <div className="alert-topline">
+        <strong>{alert.type || "Alert"}</strong>
+        <span>{alert.severity || "info"}</span>
+      </div>
+      <p>{alert.message || "No details available."}</p>
+      <div className="alert-meta">
+        {alert.ip ? <span>IP: {alert.ip}</span> : null}
+        {alert.ts ? <span>{alert.ts}</span> : null}
       </div>
     </div>
   );
@@ -297,6 +334,28 @@ export default function App() {
             <div className="devices-grid">
               {parsed.identities.map((device, index) => <IdentityCard key={index} device={device} />)}
             </div>
+          </section>
+        ) : null}
+
+        {active === "activity" && parsed.alertItems.length > 0 ? (
+          <section className="activity-section">
+            <div className="section-title">
+              <strong>Persistent Alert Center</strong>
+              <span>{parsed.alertItems.length} alert(s)</span>
+            </div>
+            <div className="alert-list">
+              {parsed.alertItems.map((alert, index) => <AlertCard key={index} alert={alert} />)}
+            </div>
+          </section>
+        ) : null}
+
+        {active === "activity" && parsed.alertItems.length === 0 ? (
+          <section className="activity-section">
+            <div className="section-title">
+              <strong>Persistent Alert Center</strong>
+              <span>No alerts loaded</span>
+            </div>
+            <p className="empty-note">Run Alert Center to load historical protection events.</p>
           </section>
         ) : null}
 

@@ -1,0 +1,1 @@
+{"schema":"shutterwall.alert.v1","ts_utc":"2026-05-07T18:31:47.9636744Z","severity":"low","alert_type":"device_trust_changed","ip":"192.168.4.30","message":"Device trust state set to review","source":"device_registry"}

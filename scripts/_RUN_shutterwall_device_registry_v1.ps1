@@ -159,7 +159,7 @@ if($Mode -eq "trust"){
     throw "MISSING_TRUST_STATE"
   }
 
-  $allowed = @("trusted","review","blocked")
+  $allowed = @("trusted","review","blocked","unknown")
   if($allowed -notcontains $TrustState){
     throw ("INVALID_TRUST_STATE: " + $TrustState)
   }
@@ -182,6 +182,9 @@ if($Mode -eq "trust"){
   }
 
   Write-Utf8NoBomLf -Path $RegistryPath -Text ($doc | ConvertTo-Json -Depth 20)
+
+  # SHUTTERWALL_ALERT_TRUST_EMIT_V1
+  & "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_alert_center_v1.ps1") -Mode emit -RepoRoot $RepoRoot -AlertType "device_trust_changed" -Severity "low" -Ip $Ip -Message ("Device trust state set to " + $TrustState) -Source "device_registry"
 
   Write-Host ("DEVICE_TRUST_SET :: " + $Ip + " :: " + $TrustState)
   Write-Host ("DEVICE_REGISTRY_PATH: " + $RegistryPath)

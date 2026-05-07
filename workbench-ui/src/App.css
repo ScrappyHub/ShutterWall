@@ -583,3 +583,75 @@ html, body, #root {
   border-color: rgba(140,150,170,0.40);
   background: rgba(140,150,170,0.10);
 }
+
+.activity-section {
+  background: #101827;
+  border: 1px solid #263044;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-card {
+  background: #0b1220;
+  border: 1px solid #34507a;
+  border-left: 5px solid #8fb3ff;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.alert-card.severity-low {
+  border-left-color: #8fb3ff;
+}
+
+.alert-card.severity-medium {
+  border-left-color: #ffd27a;
+}
+
+.alert-card.severity-high,
+.alert-card.severity-critical {
+  border-left-color: #ff7777;
+}
+
+.alert-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.alert-topline strong {
+  color: #ffffff;
+}
+
+.alert-topline span {
+  color: #9eb8ff;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.alert-card p {
+  color: #d5e0f3;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.alert-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #9eb8ff;
+  font-size: 12px;
+}
+
+.empty-note {
+  color: #d5e0f3;
+  margin: 0;
+}

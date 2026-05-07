@@ -161,6 +161,7 @@ function Show-Help {
   Write-Host "  shutterwall registry                           # list persistent device registry"
   Write-Host "  shutterwall trust-set <ip> <trusted|review|blocked>"
   Write-Host "  shutterwall posture                            # show protection posture and next action"
+  Write-Host "  shutterwall alerts                             # show persistent alert center"
   Write-Host "  shutterwall scan                               # home-safe preview"
   Write-Host "  shutterwall scan-business                      # small business preview"
   Write-Host "  shutterwall scan-enterprise                    # enterprise strict preview"
@@ -268,6 +269,11 @@ switch ($Command) {
       "-Ip",([string]$CommandArgs[0]),
       "-TrustState",([string]$CommandArgs[1])
     )
+    return
+  }
+
+  "alerts" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_alert_center_v1.ps1" -ExtraArgs @("-Mode","list","-RepoRoot",$RepoRoot)
     return
   }
 
