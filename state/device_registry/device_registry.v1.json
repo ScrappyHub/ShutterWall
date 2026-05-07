@@ -32,11 +32,12 @@
                         "engine_guess":  "Needs Review",
                         "confidence_percent":  30,
                         "vendor_hint":  "unknown",
-                        "trust_state":  "unknown",
+                        "trust_state":  "review",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
                         "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
                         "change_count":  0,
-                        "notes":  ""
+                        "notes":  "",
+                        "last_trust_update_utc":  "2026-05-07T02:12:47.9274045Z"
                     },
                     {
                         "ip":  "192.168.4.1",
@@ -44,11 +45,12 @@
                         "engine_guess":  "Likely Router / Gateway",
                         "confidence_percent":  55,
                         "vendor_hint":  "unknown",
-                        "trust_state":  "unknown",
+                        "trust_state":  "trusted",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
                         "last_seen_utc":  "2026-05-06T22:36:55.0314851Z",
                         "change_count":  0,
-                        "notes":  ""
+                        "notes":  "",
+                        "last_trust_update_utc":  "2026-05-07T02:12:46.1986006Z"
                     },
                     {
                         "ip":  "192.168.4.24",

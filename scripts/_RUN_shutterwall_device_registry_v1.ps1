@@ -12,6 +12,21 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# DEVICE_REGISTRY_PATH_INIT_V2
+$StateRoot = Join-Path $RepoRoot "state\device_registry"
+
+if(-not (Test-Path -LiteralPath $StateRoot -PathType Container)){
+  [void](New-Item -ItemType Directory -Path $StateRoot -Force)
+}
+
+$RegistryPath = Join-Path $StateRoot "device_registry.v1.json"
+
+if(-not (Test-Path -LiteralPath $RegistryPath -PathType Leaf)){
+  "{}" | Out-File -LiteralPath $RegistryPath -Encoding utf8
+}
+
+
 $RegistryRoot = Join-Path $RepoRoot "state\device_registry"
 $RegistryFile = Join-Path $RegistryRoot "device_registry.v1.json"
 
@@ -158,7 +173,11 @@ if($Mode -eq "trust"){
   foreach($device in @($doc.devices)){
     if(([string]$device.ip) -eq $Ip){
       $device.trust_state = $TrustState
-      $device.last_trust_update_utc = [DateTime]::UtcNow.ToString("o")
+      if($device.PSObject.Properties.Name -contains "last_trust_update_utc"){
+        $device.last_trust_update_utc = [DateTime]::UtcNow.ToString("o")
+      } else {
+        $device | Add-Member -NotePropertyName "last_trust_update_utc" -NotePropertyValue ([DateTime]::UtcNow.ToString("o"))
+      }
     }
   }
 
