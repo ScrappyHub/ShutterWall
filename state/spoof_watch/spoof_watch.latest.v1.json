@@ -1,0 +1,10 @@
+{
+    "schema":  "shutterwall.spoof_watch.v1",
+    "updated_at_utc":  "2026-05-09T19:33:36.8487695Z",
+    "registry_device_count":  6,
+    "neighbor_observation_count":  14,
+    "finding_count":  0,
+    "findings":  [
+
+                 ]
+}
