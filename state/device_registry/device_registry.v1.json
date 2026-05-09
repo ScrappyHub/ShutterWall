@@ -1,7 +1,19 @@
 {
     "schema":  "shutterwall.device_registry.v1",
-    "updated_at_utc":  "2026-05-07T17:06:10.4603764Z",
+    "updated_at_utc":  "2026-05-09T15:44:07.5083566Z",
     "devices":  [
+                    {
+                        "ip":  "192.168.4.32",
+                        "user_label":  "",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "unknown",
+                        "first_seen_utc":  "2026-05-08T00:27:31.7501769Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
                     {
                         "ip":  "192.168.4.36",
                         "user_label":  "",
@@ -10,7 +22,7 @@
                         "vendor_hint":  "unknown",
                         "trust_state":  "unknown",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-07T17:06:10.3519452Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
                         "change_count":  0,
                         "notes":  ""
                     },
@@ -22,22 +34,9 @@
                         "vendor_hint":  "unknown",
                         "trust_state":  "unknown",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-07T17:06:10.3519452Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
                         "change_count":  0,
                         "notes":  ""
-                    },
-                    {
-                        "ip":  "192.168.4.30",
-                        "user_label":  "Garage Camera",
-                        "engine_guess":  "Needs Review",
-                        "confidence_percent":  30,
-                        "vendor_hint":  "unknown",
-                        "trust_state":  "review",
-                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-07T17:06:10.3519452Z",
-                        "change_count":  0,
-                        "notes":  "",
-                        "last_trust_update_utc":  "2026-05-07T18:31:46.2397971Z"
                     },
                     {
                         "ip":  "192.168.4.1",
@@ -47,7 +46,7 @@
                         "vendor_hint":  "unknown",
                         "trust_state":  "trusted",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-07T17:06:10.3519452Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
                         "change_count":  0,
                         "notes":  ""
                     },
@@ -59,7 +58,19 @@
                         "vendor_hint":  "unknown",
                         "trust_state":  "unknown",
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-07T17:06:10.3519452Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
+                        "change_count":  0,
+                        "notes":  ""
+                    },
+                    {
+                        "ip":  "192.168.4.30",
+                        "user_label":  "Garage Camera",
+                        "engine_guess":  "Needs Review",
+                        "confidence_percent":  30,
+                        "vendor_hint":  "unknown",
+                        "trust_state":  "trusted",
+                        "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
+                        "last_seen_utc":  "2026-05-09T15:44:07.4747576Z",
                         "change_count":  0,
                         "notes":  ""
                     }

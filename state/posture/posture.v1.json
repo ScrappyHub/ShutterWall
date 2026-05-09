@@ -1,18 +1,18 @@
 {
     "schema":  "shutterwall.protection_posture.v1",
-    "updated_at_utc":  "2026-05-07T18:33:10.6176738Z",
+    "updated_at_utc":  "2026-05-09T15:44:12.7319652Z",
     "protection_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "baseline_exists":  true,
-    "device_count":  5,
+    "device_count":  6,
     "labeled_device_count":  2,
     "needs_review_count":  4,
-    "unknown_trust_count":  3,
-    "trusted_count":  1,
-    "review_trust_count":  1,
+    "unknown_trust_count":  4,
+    "trusted_count":  2,
+    "review_trust_count":  0,
     "blocked_count":  0,
     "changed_device_count":  0,
-    "latest_alert_count":  1,
+    "latest_alert_count":  2,
     "latest_network_state":  "NETWORK_STATE_CHANGED",
-    "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260506_182330Z.json"
+    "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json"
 }
