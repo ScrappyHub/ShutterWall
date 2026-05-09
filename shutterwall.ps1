@@ -159,6 +159,7 @@ function Show-Help {
   Write-Host "  shutterwall label-list                         # list user-owned device labels"
   Write-Host "  shutterwall label-remove <ip>                  # remove user-owned device label"
   Write-Host "  shutterwall registry                           # list persistent device registry"
+  Write-Host "  shutterwall registry-migrate                   # normalize persistent device registry schema"
   Write-Host "  shutterwall review                             # review remembered devices, posture, diffs, and alerts"
   Write-Host "  shutterwall trust-set <ip> <trusted|review|blocked>"
   Write-Host "  shutterwall posture                            # show protection posture and next action"
@@ -282,6 +283,11 @@ switch ($Command) {
     }
 
     Write-Host "SHUTTERWALL_REVIEW_LATEST_OK"
+    return
+  }
+
+  "registry-migrate" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_registry_migrate_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
   }
 

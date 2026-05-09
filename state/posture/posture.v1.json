@@ -1,11 +1,11 @@
 {
     "schema":  "shutterwall.protection_posture.v1",
-    "updated_at_utc":  "2026-05-09T15:44:12.7319652Z",
+    "updated_at_utc":  "2026-05-09T18:26:39.8823228Z",
     "protection_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "baseline_exists":  true,
     "device_count":  6,
-    "labeled_device_count":  2,
+    "labeled_device_count":  6,
     "needs_review_count":  4,
     "unknown_trust_count":  4,
     "trusted_count":  2,
