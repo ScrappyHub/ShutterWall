@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.device_registry.v1",
-    "updated_at_utc":  "2026-05-11T01:47:40.5914981Z",
+    "updated_at_utc":  "2026-05-11T21:17:00.0058209Z",
     "migration":  "registry_memory_fields_v1",
     "devices":  [
                     {

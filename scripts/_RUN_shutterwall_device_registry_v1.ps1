@@ -12,6 +12,25 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Get-PropValue {
+  param(
+    $Obj,
+    [string]$Name,
+    $Default = $null
+  )
+
+  if($null -eq $Obj){ return $Default }
+
+  if(@($Obj.PSObject.Properties.Name) -contains $Name){
+    $value = $Obj.$Name
+    if($null -eq $value){ return $Default }
+    return $value
+  }
+
+  return $Default
+}
+
+
 
 # DEVICE_REGISTRY_PATH_INIT_V2
 $StateRoot = Join-Path $RepoRoot "state\device_registry"

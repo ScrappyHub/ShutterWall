@@ -1,14 +1,14 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-05-11T01:47:44.4399073Z",
+    "updated_at_utc":  "2026-05-11T21:17:03.9348159Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "device_count":  6,
-    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\43bf493fda03187096189a04f392ac6bb5f6b3a825fe8fc27c00ed763f24f436",
-    "last_scanned_utc":  "2026-05-11T01:47:34.3002893Z",
+    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\830d21a829569a52c62f96c25f009006e9811e32148f31f0c80acb1b7b676991",
+    "last_scanned_utc":  "2026-05-11T21:16:52.9464521Z",
     "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json",
     "latest_alert_count":  2,
-    "alert_history_count":  3,
+    "alert_history_count":  7,
     "devices":  [
                     {
                         "ip":  "192.168.4.32",

@@ -5,6 +5,25 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Get-PropValue {
+  param(
+    $Obj,
+    [string]$Name,
+    $Default = $null
+  )
+
+  if($null -eq $Obj){ return $Default }
+
+  if(@($Obj.PSObject.Properties.Name) -contains $Name){
+    $value = $Obj.$Name
+    if($null -eq $value){ return $Default }
+    return $value
+  }
+
+  return $Default
+}
+
+
 $RegistryPath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 $SpoofRoot = Join-Path $RepoRoot "state\spoof_watch"
 $SpoofPath = Join-Path $SpoofRoot "spoof_watch.latest.v1.json"

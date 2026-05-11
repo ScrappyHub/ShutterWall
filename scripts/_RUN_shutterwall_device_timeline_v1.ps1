@@ -5,6 +5,25 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Get-PropValue {
+  param(
+    $Obj,
+    [string]$Name,
+    $Default = $null
+  )
+
+  if($null -eq $Obj){ return $Default }
+
+  if(@($Obj.PSObject.Properties.Name) -contains $Name){
+    $value = $Obj.$Name
+    if($null -eq $value){ return $Default }
+    return $value
+  }
+
+  return $Default
+}
+
+
 $RegistryPath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 $TimelineRoot = Join-Path $RepoRoot "state\device_timeline"
 $TimelinePath = Join-Path $TimelineRoot "device_timeline.v1.ndjson"
@@ -62,10 +81,10 @@ foreach($d in $devices){
 
   $label = [string]$d.label
   $trust = [string]$d.trust_state
-  $firstSeen = if(Has-Prop $d "first_seen_utc"){ [string]$d.first_seen_utc } else { $now }
+  $firstSeen = if(Has-Prop $d "first_seen_utc"){ [string](Get-PropValue $d "first_seen_utc" "") } else { $now }
   $lastSeen = if(Has-Prop $d "last_seen_utc"){ [string]$d.last_seen_utc } else { $now }
-  $lastReviewed = if(Has-Prop $d "last_reviewed_utc"){ [string]$d.last_reviewed_utc } else { "" }
-  $changeType = if(Has-Prop $d "last_change_type"){ [string]$d.last_change_type } else { "observed" }
+  $lastReviewed = if(Has-Prop $d "last_reviewed_utc"){ [string](Get-PropValue $d "last_reviewed_utc" "") } else { "" }
+  $changeType = if(Has-Prop $d "last_change_type"){ [string](Get-PropValue $d "last_change_type" "") } else { "observed" }
 
   $events = @(
     [ordered]@{
