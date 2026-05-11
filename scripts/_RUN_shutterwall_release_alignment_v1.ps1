@@ -37,6 +37,7 @@ Invoke-ShutterWall -CommandArgs @("identity")
 # Registry + review
 Invoke-ShutterWall -CommandArgs @("registry")
 Invoke-ShutterWall -CommandArgs @("registry-migrate")
+Invoke-ShutterWall -CommandArgs @("timeline")
 Invoke-ShutterWall -CommandArgs @("review")
 
 # Alert + posture

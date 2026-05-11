@@ -164,6 +164,7 @@ function Show-Help {
   Write-Host "  shutterwall trust-set <ip> <trusted|review|blocked>"
   Write-Host "  shutterwall posture                            # show protection posture and next action"
   Write-Host "  shutterwall alerts                             # show persistent alert center"
+  Write-Host "  shutterwall timeline                           # update device timeline memory"
   Write-Host "  shutterwall spoof-watch                        # detect possible local spoof/drift signals"
   Write-Host "  shutterwall scan                               # home-safe preview"
   Write-Host "  shutterwall scan-business                      # small business preview"
@@ -306,6 +307,11 @@ switch ($Command) {
       "-Ip",([string]$CommandArgs[0]),
       "-TrustState",([string]$CommandArgs[1])
     )
+    return
+  }
+
+  "timeline" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_timeline_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
   }
 
