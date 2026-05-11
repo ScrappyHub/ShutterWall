@@ -1,0 +1,43 @@
+{
+    "schema":  "shutterwall.ids_hooks.v1",
+    "updated_at_utc":  "2026-05-11T20:20:29.9273153Z",
+    "mode":  "semi_active_defensive",
+    "device_count":  6,
+    "timeline_event_count":  24,
+    "spoof_finding_count":  0,
+    "finding_count":  4,
+    "findings":  [
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.32",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.36",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.39",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.24",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     }
+                 ]
+}

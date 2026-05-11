@@ -43,6 +43,7 @@ Invoke-ShutterWall -CommandArgs @("review")
 # Alert + posture
 Invoke-ShutterWall -CommandArgs @("alerts")
 Invoke-ShutterWall -CommandArgs @("spoof-watch")
+Invoke-ShutterWall -CommandArgs @("ids-hooks")
 Invoke-ShutterWall -CommandArgs @("posture")
 
 # Watch daemon

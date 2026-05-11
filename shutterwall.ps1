@@ -166,6 +166,7 @@ function Show-Help {
   Write-Host "  shutterwall alerts                             # show persistent alert center"
   Write-Host "  shutterwall timeline                           # update device timeline memory"
   Write-Host "  shutterwall spoof-watch                        # detect possible local spoof/drift signals"
+  Write-Host "  shutterwall ids-hooks                          # run semi-active IDS-ready anomaly hooks"
   Write-Host "  shutterwall scan                               # home-safe preview"
   Write-Host "  shutterwall scan-business                      # small business preview"
   Write-Host "  shutterwall scan-enterprise                    # enterprise strict preview"
@@ -312,6 +313,11 @@ switch ($Command) {
 
   "timeline" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_timeline_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "ids-hooks" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_ids_hooks_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
   }
 
