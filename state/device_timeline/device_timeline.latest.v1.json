@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.device_timeline.latest.v1",
-    "updated_at_utc":  "2026-05-11T00:39:54.5018066Z",
+    "updated_at_utc":  "2026-05-11T01:47:42.5732323Z",
     "device_count":  6,
     "new_event_count":  0,
     "timeline_path":  "C:\\dev\\shutterwall\\state\\device_timeline\\device_timeline.v1.ndjson",

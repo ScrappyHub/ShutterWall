@@ -119,7 +119,7 @@ Write-Host ("REVIEW_LATEST_DIFF_PATH: " + $doc.latest_diff_path)
 Write-Host ("REVIEW_ALERT_HISTORY_COUNT: " + $doc.alert_history_count)
 
 foreach($d in @($reviewDevices)){
-  Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: first_seen=" + $d.first_seen_utc + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $d.last_reviewed_utc + " :: source=" + $d.review_decision_source + " :: change=" + $d.last_change_type + " :: action=" + $d.recommended_action)
+  Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ $d.first_seen_utc } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ $d.last_reviewed_utc } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ $d.review_decision_source } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ $d.last_change_type } else { "" }) + " :: action=" + $d.recommended_action)
 }
 
 Write-Host "SHUTTERWALL_REVIEW_V1_OK"
