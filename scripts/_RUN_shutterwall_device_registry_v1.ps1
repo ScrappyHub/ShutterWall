@@ -11,6 +11,23 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+function Get-SafeProp {
+  param(
+    $Obj,
+    [string]$Name,
+    $Default = ""
+  )
+
+  if($null -eq $Obj){ return $Default }
+
+  if(@($Obj.PSObject.Properties.Name) -contains $Name){
+    $v = $Obj.$Name
+    if($null -eq $v){ return $Default }
+    return $v
+  }
+
+  return $Default
+}
 
 function Get-PropValue {
   param(

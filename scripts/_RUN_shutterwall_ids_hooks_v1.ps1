@@ -150,7 +150,95 @@ foreach($f in $findings){
 }
 
 Write-Host ("IDS_HOOKS_PATH: " + $IdsPath)
+
+$RegistryStatePath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
+
+$registry = @{
+  devices = @()
+}
+
+if(Test-Path -LiteralPath $RegistryStatePath){
+
+  $registryRaw = Get-Content -LiteralPath $RegistryStatePath -Raw
+
+  if(-not [string]::IsNullOrWhiteSpace($registryRaw)){
+    $registry = $registryRaw | ConvertFrom-Json
+  }
+}
+# fingerprint drift detection
+foreach($d in @(@($registry.devices))){
+
+  $trust = "unknown"
+
+  if($d.PSObject.Properties.Name -contains "trust"){
+    $trust = [string]$d.trust
+  }
+
+  $changes = 0
+
+  if($d.PSObject.Properties.Name -contains "changes"){
+    $changes = [int]$d.changes
+  }
+
+  $lastFingerprint = ""
+
+  if($d.PSObject.Properties.Name -contains "last_fingerprint"){
+    $lastFingerprint = [string]$d.last_fingerprint
+  }
+
+  $currentFingerprint = ""
+
+  if($d.PSObject.Properties.Name -contains "fingerprint_hash"){
+    $currentFingerprint = [string]$d.fingerprint_hash
+  }
+
+  if(
+    -not [string]::IsNullOrWhiteSpace($lastFingerprint) -and
+    -not [string]::IsNullOrWhiteSpace($currentFingerprint) -and
+    $lastFingerprint -ne $currentFingerprint
+  ){
+
+    $findings += [PSCustomObject]@{
+      severity   = "medium"
+      finding    = "fingerprint_drift_detected"
+      ip          = $d.ip
+      explanation = "Trusted or remembered device fingerprint changed from previous baseline."
+    }
+  }
+
+  if(
+    ($trust -eq "trusted") -and
+    ($changes -ge 3)
+  ){
+    $findings += [PSCustomObject]@{
+      severity   = "medium"
+      finding    = "trusted_device_instability"
+      ip          = $d.ip
+      explanation = "Trusted device has repeated state or fingerprint changes."
+    }
+  }
+
+  if(
+    ($trust -eq "unknown") -and
+    ($changes -ge 5)
+  ){
+    $findings += [PSCustomObject]@{
+      severity   = "high"
+      finding    = "persistent_unknown_activity"
+      ip          = $d.ip
+      explanation = "Unknown device repeatedly appearing or changing."
+    }
+  }
+}
+
+$lowCount = @($findings | Where-Object { $_.severity -eq "low" }).Count
+$mediumCount = @($findings | Where-Object { $_.severity -eq "medium" }).Count
+$highCount = @($findings | Where-Object { $_.severity -eq "high" }).Count
+
 Write-Host ("IDS_HOOKS_FINDING_COUNT: " + @($findings).Count)
+Write-Host ("IDS_HOOKS_SEVERITY_LOW: " + $lowCount)
+Write-Host ("IDS_HOOKS_SEVERITY_MEDIUM: " + $mediumCount)
+Write-Host ("IDS_HOOKS_SEVERITY_HIGH: " + $highCount)
 
 foreach($f in $findings){
   Write-Host ("IDS_HOOK_FINDING :: " + $f.severity + " :: " + $f.type + " :: " + $f.ip + " :: " + $f.explanation)
