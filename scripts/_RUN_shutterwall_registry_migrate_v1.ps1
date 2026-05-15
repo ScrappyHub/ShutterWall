@@ -79,6 +79,13 @@ foreach($d in $devices){
     last_change_type = [string](Get-Prop $d "last_change_type" "schema_migrated")
     last_change_utc = [string](Get-Prop $d "last_change_utc" $now)
     last_trust_update_utc = [string](Get-Prop $d "last_trust_update_utc" "")
+notes = [string](Get-Prop $d "notes" "")
+anomaly_score = [int](Get-Prop $d "anomaly_score" 0)
+persistence_score = [int](Get-Prop $d "persistence_score" 0)
+spoof_risk_score = [int](Get-Prop $d "spoof_risk_score" 0)
+volatility_score = [int](Get-Prop $d "volatility_score" 0)
+trust_decay_score = [int](Get-Prop $d "trust_decay_score" 0)
+confidence_history = @(Get-Prop $d "confidence_history" @())
   }
 }
 

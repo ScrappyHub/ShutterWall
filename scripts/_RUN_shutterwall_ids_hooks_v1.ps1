@@ -4,6 +4,36 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+function Test-AlertAlreadyWrittenToday {
+  param(
+    [string]$Path,
+    [string]$AlertType,
+    [string]$Ip,
+    [string]$DayPrefix
+  )
+
+  if(-not (Test-Path -LiteralPath $Path)){ return $false }
+
+  foreach($line in @(Get-Content -LiteralPath $Path -ErrorAction SilentlyContinue)){
+    if([string]::IsNullOrWhiteSpace($line)){ continue }
+    try {
+      $a = $line | ConvertFrom-Json
+      $ts = ""
+      if($a.PSObject.Properties.Name -contains "timestamp_utc"){ $ts = [string]$a.timestamp_utc }
+      elseif($a.PSObject.Properties.Name -contains "ts_utc"){ $ts = [string]$a.ts_utc }
+
+      if(
+        $ts.StartsWith($DayPrefix) -and
+        ([string]$a.alert_type) -eq $AlertType -and
+        ([string]$a.ip) -eq $Ip
+      ){
+        return $true
+      }
+    } catch {}
+  }
+
+  return $false
+}
 
 function Get-PropValue {
   param(
@@ -146,7 +176,13 @@ foreach($f in $findings){
     ip = [string]$f.ip
     message = [string]$f.explanation
   }
+  $alertType = [string]$alert.alert_type
+$alertIp = [string]$alert.ip
+$dayPrefix = $now.Substring(0,10)
+
+if(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
   Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
+}
 }
 
 Write-Host ("IDS_HOOKS_PATH: " + $IdsPath)
