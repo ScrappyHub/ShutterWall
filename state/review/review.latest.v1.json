@@ -1,31 +1,22 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-05-15T01:17:56.7349348Z",
+    "updated_at_utc":  "2026-05-26T20:24:12.9298636Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
-    "device_count":  6,
-    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\32fd54287625416914174ddaeaa211de3584838606ed297b5dcb982c763d3162",
-    "last_scanned_utc":  "2026-05-15T01:17:38.1592296Z",
+    "device_count":  5,
+    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\410bbf2e549ba476241ad6f3d84d2731a67b73ca1cfaaef54825657b60d61aba",
+    "last_scanned_utc":  "2026-05-26T20:23:52.4645281Z",
     "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json",
     "latest_alert_count":  2,
-    "alert_history_count":  39,
+    "alert_history_count":  48,
     "devices":  [
-                    {
-                        "ip":  "192.168.4.32",
-                        "label":  "Needs Review",
-                        "trust_state":  "unknown",
-                        "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  1,
-                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
-                    },
                     {
                         "ip":  "192.168.4.36",
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  1,
+                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "change_count":  2,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
@@ -33,17 +24,26 @@
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  1,
+                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "change_count":  2,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
+                        "ip":  "192.168.4.30",
+                        "label":  "Needs Review",
+                        "trust_state":  "trusted",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "change_count":  1,
+                        "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
+                    },
+                    {
                         "ip":  "192.168.4.1",
-                        "label":  "Printer",
+                        "label":  "Likely Router / Gateway",
                         "trust_state":  "trusted",
                         "engine_guess":  "Likely Router / Gateway",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  0,
+                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "change_count":  1,
                         "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
                     },
                     {
@@ -51,18 +51,9 @@
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  1,
+                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "change_count":  2,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
-                    },
-                    {
-                        "ip":  "192.168.4.30",
-                        "label":  "Garage Camera",
-                        "trust_state":  "trusted",
-                        "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-15T01:17:50.0837583Z",
-                        "change_count":  0,
-                        "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
                     }
                 ]
 }
