@@ -319,9 +319,14 @@ foreach($f in $findings){
   if(Test-IdsSuppressed -Entry $entry -NowUtc $nowDt -SuppressHours $IdsSuppressHours){
     $suppressedCount += 1
   }
+  elseif(Test-IdsSuppressed -Entry $entry -NowUtc $nowDt -SuppressHours $IdsSuppressHours){
+    $suppressedCount += 1
+  }
   elseif(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
     Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
     $entry.last_alerted_utc = $now
+  } else {
+    $suppressedCount += 1
   } else {
     $suppressedCount += 1
   }

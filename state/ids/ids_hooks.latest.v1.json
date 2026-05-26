@@ -1,9 +1,9 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-05-26T22:11:02.1048837Z",
+    "updated_at_utc":  "2026-05-26T23:20:19.8887389Z",
     "mode":  "semi_active_defensive",
     "device_count":  5,
-    "timeline_event_count":  66,
+    "timeline_event_count":  76,
     "spoof_finding_count":  0,
     "finding_count":  5,
     "escalated_count":  0,
