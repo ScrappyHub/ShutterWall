@@ -4,6 +4,53 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+function Get-FindingKey {
+  param($Finding)
+  $t = ""
+  if($Finding.PSObject.Properties.Name -contains "type"){ $t = [string]$Finding.type }
+  elseif($Finding.PSObject.Properties.Name -contains "alert_type"){ $t = [string]$Finding.alert_type }
+  $ip = ""
+  if($Finding.PSObject.Properties.Name -contains "ip"){ $ip = [string]$Finding.ip }
+  return ($t + "|" + $ip)
+}
+
+function Load-IdsMemory {
+  param([string]$Path)
+
+  if(-not (Test-Path -LiteralPath $Path)){
+    return [ordered]@{
+      schema = "shutterwall.ids_alert_memory.v1"
+      entries = @()
+    }
+  }
+
+  try {
+    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+  } catch {
+    return [ordered]@{
+      schema = "shutterwall.ids_alert_memory.v1"
+      entries = @()
+    }
+  }
+}
+
+function Save-IdsMemory {
+  param($Memory,[string]$Path)
+
+  $txt = $Memory | ConvertTo-Json -Depth 50
+  Write-Utf8NoBomLf -Path $Path -Text $txt
+}
+
+function Get-IdsMemoryEntry {
+  param($Memory,[string]$Key)
+
+  foreach($e in @($Memory.entries)){
+    if([string]$e.key -eq $Key){ return $e }
+  }
+
+  return $null
+}
 function Test-AlertAlreadyWrittenToday {
   param(
     [string]$Path,
@@ -59,6 +106,7 @@ $TimelinePath = Join-Path $RepoRoot "state\device_timeline\device_timeline.v1.nd
 $SpoofPath    = Join-Path $RepoRoot "state\spoof_watch\spoof_watch.latest.v1.json"
 $IdsRoot      = Join-Path $RepoRoot "state\ids"
 $IdsPath      = Join-Path $IdsRoot "ids_hooks.latest.v1.json"
+$IdsMemoryPath = Join-Path $IdsRoot "ids_alert_memory.v1.json"
 $AlertsPath   = Join-Path $RepoRoot "state\alerts\alerts.ndjson"
 
 $enc = New-Object System.Text.UTF8Encoding($false)
@@ -111,6 +159,34 @@ if(Test-Path -LiteralPath $SpoofPath){
 
 $findings = @()
 
+$DiffEnginePath = Join-Path $RepoRoot "state\diff\diff.latest.v1.json"
+
+if(Test-Path $DiffEnginePath){
+
+  try {
+
+    $diff = Get-Content $DiffEnginePath -Raw | ConvertFrom-Json
+
+    foreach($f in @($diff.findings)){
+
+      if(
+        [int]$f.anomaly_score -ge 3 -or
+        [int]$f.spoof_risk_score -ge 3
+      ){
+
+        $findings += [PSCustomObject]@{
+          severity = [string]$f.severity
+          alert_type = "behavioral_drift_detected"
+          ip = [string]$f.ip
+          message = "Behavioral drift exceeded safe threshold."
+        }
+      }
+    }
+
+  } catch {}
+
+}
+
 foreach($d in $devices){
   $ip = [string]$d.ip
   if([string]::IsNullOrWhiteSpace($ip)){ continue }
@@ -154,6 +230,9 @@ foreach($sf in $spoofFindings){
 }
 
 $now = [DateTime]::UtcNow.ToString("o")
+$idsMemory = Load-IdsMemory -Path $IdsMemoryPath
+$memoryEntries = @($idsMemory.entries)
+$escalatedFindings = @()
 $docOut = [ordered]@{
   schema = "shutterwall.ids_hooks.v1"
   updated_at_utc = $now
@@ -162,28 +241,63 @@ $docOut = [ordered]@{
   timeline_event_count = @($timelineEvents).Count
   spoof_finding_count = @($spoofFindings).Count
   finding_count = @($findings).Count
+  escalated_count = @($escalatedFindings).Count
+  memory_entry_count = @($memoryEntries).Count
   findings = @($findings)
 }
 
 Write-Utf8NoBomLf -Path $IdsPath -Text ($docOut | ConvertTo-Json -Depth 40)
 
 foreach($f in $findings){
+  $key = Get-FindingKey -Finding $f
+  $entry = Get-IdsMemoryEntry -Memory $idsMemory -Key $key
+
+  if($null -eq $entry){
+    $entry = [ordered]@{
+      key = $key
+      first_seen_utc = $now
+      last_seen_utc = $now
+      repeat_count = 1
+      last_alerted_utc = ""
+    }
+    $memoryEntries += [PSCustomObject]$entry
+  } else {
+    $entry.last_seen_utc = $now
+    $entry.repeat_count = [int]$entry.repeat_count + 1
+  }
+
+  $severity = [string]$f.severity
+  if([int]$entry.repeat_count -ge 5 -and $severity -eq "low"){
+    $severity = "medium"
+    $escalatedFindings += @($f)
+  }
+
   $alert = [ordered]@{
     schema = "shutterwall.alert.v1"
     timestamp_utc = $now
-    severity = [string]$f.severity
+    severity = $severity
     alert_type = "ids_hook_" + [string]$f.type
     ip = [string]$f.ip
-    message = [string]$f.explanation
+    message = ([string]$f.explanation + " repeat_count=" + [string]$entry.repeat_count)
   }
-  $alertType = [string]$alert.alert_type
-$alertIp = [string]$alert.ip
-$dayPrefix = $now.Substring(0,10)
 
-if(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
-  Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
+  $alertType = [string]$alert.alert_type
+  $alertIp = [string]$alert.ip
+  $dayPrefix = $now.Substring(0,10)
+
+  if(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
+    Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
+    $entry.last_alerted_utc = $now
+  }
 }
+
+$idsMemory = [ordered]@{
+  schema = "shutterwall.ids_alert_memory.v1"
+  updated_at_utc = $now
+  entries = @($memoryEntries)
 }
+
+Save-IdsMemory -Memory $idsMemory -Path $IdsMemoryPath
 
 Write-Host ("IDS_HOOKS_PATH: " + $IdsPath)
 
@@ -272,6 +386,8 @@ $mediumCount = @($findings | Where-Object { $_.severity -eq "medium" }).Count
 $highCount = @($findings | Where-Object { $_.severity -eq "high" }).Count
 
 Write-Host ("IDS_HOOKS_FINDING_COUNT: " + @($findings).Count)
+Write-Host ("IDS_HOOKS_ESCALATED_COUNT: " + @($escalatedFindings).Count)
+Write-Host ("IDS_HOOKS_MEMORY_ENTRY_COUNT: " + @($memoryEntries).Count)
 Write-Host ("IDS_HOOKS_SEVERITY_LOW: " + $lowCount)
 Write-Host ("IDS_HOOKS_SEVERITY_MEDIUM: " + $mediumCount)
 Write-Host ("IDS_HOOKS_SEVERITY_HIGH: " + $highCount)

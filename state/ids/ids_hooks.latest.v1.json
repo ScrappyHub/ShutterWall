@@ -1,20 +1,14 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-05-15T01:17:54.6566457Z",
+    "updated_at_utc":  "2026-05-26T20:47:39.7516037Z",
     "mode":  "semi_active_defensive",
-    "device_count":  6,
-    "timeline_event_count":  36,
+    "device_count":  5,
+    "timeline_event_count":  56,
     "spoof_finding_count":  0,
-    "finding_count":  4,
+    "finding_count":  5,
+    "escalated_count":  0,
+    "memory_entry_count":  5,
     "findings":  [
-                     {
-                         "severity":  "low",
-                         "type":  "unknown_device_requires_review",
-                         "ip":  "192.168.4.32",
-                         "label":  "Needs Review",
-                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
-                         "recommended_action":  "Open Review and classify this device."
-                     },
                      {
                          "severity":  "low",
                          "type":  "unknown_device_requires_review",
@@ -30,6 +24,22 @@
                          "label":  "Needs Review",
                          "explanation":  "Device is present in memory but has not been trusted or reviewed.",
                          "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "medium",
+                         "type":  "trusted_device_changed",
+                         "ip":  "192.168.4.30",
+                         "label":  "Needs Review",
+                         "explanation":  "Trusted device has recorded change count greater than zero.",
+                         "recommended_action":  "Review timeline and confirm the device still matches expectations."
+                     },
+                     {
+                         "severity":  "medium",
+                         "type":  "trusted_device_changed",
+                         "ip":  "192.168.4.1",
+                         "label":  "Needs Review",
+                         "explanation":  "Trusted device has recorded change count greater than zero.",
+                         "recommended_action":  "Review timeline and confirm the device still matches expectations."
                      },
                      {
                          "severity":  "low",

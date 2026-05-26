@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.protection_posture.v1",
-    "updated_at_utc":  "2026-05-26T20:24:11.7920654Z",
+    "updated_at_utc":  "2026-05-26T20:47:41.7882810Z",
     "protection_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "baseline_exists":  true,
