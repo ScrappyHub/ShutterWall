@@ -1,13 +1,15 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-05-26T20:47:39.7516037Z",
+    "updated_at_utc":  "2026-05-26T22:11:02.1048837Z",
     "mode":  "semi_active_defensive",
     "device_count":  5,
-    "timeline_event_count":  56,
+    "timeline_event_count":  66,
     "spoof_finding_count":  0,
     "finding_count":  5,
     "escalated_count":  0,
     "memory_entry_count":  5,
+    "suppressed_count":  0,
+    "suppression_window_hours":  24,
     "findings":  [
                      {
                          "severity":  "low",

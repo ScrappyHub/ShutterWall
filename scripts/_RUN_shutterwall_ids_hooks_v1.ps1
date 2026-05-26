@@ -5,6 +5,33 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+$IdsSuppressHours = 24
+
+
+function Test-IdsSuppressed {
+  param(
+    $Entry,
+    [datetime]$NowUtc,
+    [int]$SuppressHours
+  )
+
+  if($null -eq $Entry){ return $false }
+
+  $last = ""
+  if($Entry.PSObject.Properties.Name -contains "last_alerted_utc"){
+    $last = [string]$Entry.last_alerted_utc
+  }
+
+  if([string]::IsNullOrWhiteSpace($last)){ return $false }
+
+  try {
+    $lastDt = [datetime]::Parse($last).ToUniversalTime()
+    $delta = $NowUtc - $lastDt
+    return ($delta.TotalHours -lt $SuppressHours)
+  } catch {
+    return $false
+  }
+}
 function Get-FindingKey {
   param($Finding)
   $t = ""
@@ -233,6 +260,8 @@ $now = [DateTime]::UtcNow.ToString("o")
 $idsMemory = Load-IdsMemory -Path $IdsMemoryPath
 $memoryEntries = @($idsMemory.entries)
 $escalatedFindings = @()
+$suppressedCount = 0
+$nowDt = [DateTime]::UtcNow
 $docOut = [ordered]@{
   schema = "shutterwall.ids_hooks.v1"
   updated_at_utc = $now
@@ -243,6 +272,8 @@ $docOut = [ordered]@{
   finding_count = @($findings).Count
   escalated_count = @($escalatedFindings).Count
   memory_entry_count = @($memoryEntries).Count
+  suppressed_count = $suppressedCount
+  suppression_window_hours = $IdsSuppressHours
   findings = @($findings)
 }
 
@@ -285,9 +316,14 @@ foreach($f in $findings){
   $alertIp = [string]$alert.ip
   $dayPrefix = $now.Substring(0,10)
 
-  if(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
+  if(Test-IdsSuppressed -Entry $entry -NowUtc $nowDt -SuppressHours $IdsSuppressHours){
+    $suppressedCount += 1
+  }
+  elseif(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
     Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
     $entry.last_alerted_utc = $now
+  } else {
+    $suppressedCount += 1
   }
 }
 
@@ -388,6 +424,8 @@ $highCount = @($findings | Where-Object { $_.severity -eq "high" }).Count
 Write-Host ("IDS_HOOKS_FINDING_COUNT: " + @($findings).Count)
 Write-Host ("IDS_HOOKS_ESCALATED_COUNT: " + @($escalatedFindings).Count)
 Write-Host ("IDS_HOOKS_MEMORY_ENTRY_COUNT: " + @($memoryEntries).Count)
+Write-Host ("IDS_HOOKS_SUPPRESSED_COUNT: " + $suppressedCount)
+Write-Host ("IDS_HOOKS_SUPPRESSION_WINDOW_HOURS: " + $IdsSuppressHours)
 Write-Host ("IDS_HOOKS_SEVERITY_LOW: " + $lowCount)
 Write-Host ("IDS_HOOKS_SEVERITY_MEDIUM: " + $mediumCount)
 Write-Host ("IDS_HOOKS_SEVERITY_HIGH: " + $highCount)
