@@ -1,0 +1,21 @@
+﻿{
+  "schema": "shutterwall.scope_policy.v1",
+  "profiles": [
+    {
+      "name": "home",
+      "network_label": "Home Network",
+      "cidrs": ["192.168.4.0/24"],
+      "default_ports": [22, 53, 80, 443, 445, 554, 8080, 8443],
+      "allow_remote_scan": true,
+      "mode": "defensive_connect_only"
+    },
+    {
+      "name": "lab",
+      "network_label": "Lab / Enterprise Test Network",
+      "cidrs": [],
+      "default_ports": [22, 53, 80, 135, 139, 443, 445, 554, 3389, 8080, 8443],
+      "allow_remote_scan": false,
+      "mode": "requires_explicit_allowlist"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-param(
+﻿param(
   [Parameter(Position=0)]
   [string]$Command = "help",
 
@@ -194,6 +194,11 @@ switch ($Command) {
   "quickstart" { Invoke-Quickstart; return }
   "inspect" { Invoke-Inspect; return }
 
+  "watch-cycle" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_watch_cycle_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "watch-start" {
     Write-Host "WATCH_DAEMON_DISABLED_PENDING_V2_SILENT_WORKER" -ForegroundColor Yellow
     return
@@ -331,6 +336,21 @@ switch ($Command) {
     return
   }
 
+  "scope" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_scope_policy_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "network-profile" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_network_profile_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "lab-scan" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_lab_scan_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "posture" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_posture_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -356,3 +376,4 @@ switch ($Command) {
     return
   }
 }
+

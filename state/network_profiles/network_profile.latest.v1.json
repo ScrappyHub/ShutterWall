@@ -1,0 +1,11 @@
+﻿{
+    "schema":  "shutterwall.network_profile.v1",
+    "profile":  "home",
+    "network_label":  "Home Network",
+    "cidrs":  [
+                  "192.168.4.0/24"
+              ],
+    "mode":  "defensive_connect_only",
+    "allow_remote_scan":  true,
+    "generated_utc":  "2026-06-08T15:13:34.0748500Z"
+}
