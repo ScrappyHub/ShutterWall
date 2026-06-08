@@ -1,0 +1,30 @@
+﻿{
+    "schema":  "shutterwall.service_profile.v1",
+    "generated_utc":  "2026-06-08T20:30:02.0995439Z",
+    "source_scan_path":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall_lab_scan\\588acfd9a7974b7a8b30d9733b2ef707\\lab_scan.results.v1.json",
+    "profile_count":  1,
+    "profiles":  [
+                     {
+                         "ip":  "192.168.4.1",
+                         "open_ports":  [
+                                            53,
+                                            80
+                                        ],
+                         "services":  [
+                                          {
+                                              "port":  53,
+                                              "service":  "DNS",
+                                              "state":  "open"
+                                          },
+                                          {
+                                              "port":  80,
+                                              "service":  "HTTP",
+                                              "state":  "open"
+                                          }
+                                      ],
+                         "device_class":  "Likely Router / Gateway",
+                         "confidence_percent":  72,
+                         "reason":  "DNS plus web administration service detected."
+                     }
+                 ]
+}

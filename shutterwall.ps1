@@ -346,6 +346,11 @@ switch ($Command) {
     return
   }
 
+  "service-classify" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_service_classifier_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "lab-scan" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_lab_scan_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -376,4 +381,5 @@ switch ($Command) {
     return
   }
 }
+
 
