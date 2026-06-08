@@ -1,7 +1,6 @@
-{
+﻿{
     "schema":  "shutterwall.device_registry.v1",
-    "updated_at_utc":  "2026-05-26T20:24:06.8955197Z",
-    "migration":  "registry_memory_fields_v1",
+    "updated_utc":  "2026-06-08T23:23:33.2568469Z",
     "devices":  [
                     {
                         "ip":  "192.168.4.36",
@@ -13,13 +12,13 @@
                         "trust_state":  "unknown",
                         "change_count":  2,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
                         "last_reviewed_utc":  "",
                         "review_decision_source":  "engine_observed",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
                         "last_change_type":  "schema_migrated",
-                        "last_change_utc":  "2026-05-26T20:24:06.8955197Z",
+                        "last_change_utc":  "2026-05-26T23:30:20.7745384Z",
                         "last_trust_update_utc":  "",
                         "notes":  "",
                         "anomaly_score":  0,
@@ -41,13 +40,13 @@
                         "trust_state":  "unknown",
                         "change_count":  2,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
                         "last_reviewed_utc":  "",
                         "review_decision_source":  "engine_observed",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
                         "last_change_type":  "schema_migrated",
-                        "last_change_utc":  "2026-05-26T20:24:06.8955197Z",
+                        "last_change_utc":  "2026-05-26T23:30:20.7745384Z",
                         "last_trust_update_utc":  "",
                         "notes":  "",
                         "anomaly_score":  0,
@@ -69,13 +68,13 @@
                         "trust_state":  "trusted",
                         "change_count":  1,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
                         "last_reviewed_utc":  "",
                         "review_decision_source":  "engine_observed",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
                         "last_change_type":  "schema_migrated",
-                        "last_change_utc":  "2026-05-26T20:24:06.8955197Z",
+                        "last_change_utc":  "2026-05-26T23:30:20.7745384Z",
                         "last_trust_update_utc":  "",
                         "notes":  "",
                         "anomaly_score":  0,
@@ -89,7 +88,7 @@
                     },
                     {
                         "ip":  "192.168.4.1",
-                        "label":  "Needs Review",
+                        "label":  "Likely Router / Gateway",
                         "user_label":  "",
                         "engine_guess":  "Likely Router / Gateway",
                         "confidence_percent":  55,
@@ -97,13 +96,13 @@
                         "trust_state":  "trusted",
                         "change_count":  1,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
                         "last_reviewed_utc":  "",
                         "review_decision_source":  "engine_observed",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
                         "last_change_type":  "schema_migrated",
-                        "last_change_utc":  "2026-05-26T20:24:06.8955197Z",
+                        "last_change_utc":  "2026-05-26T23:30:20.7745384Z",
                         "last_trust_update_utc":  "",
                         "notes":  "",
                         "anomaly_score":  0,
@@ -113,7 +112,28 @@
                         "trust_decay_score":  0,
                         "confidence_history":  [
 
-                                               ]
+                                               ],
+                        "service_class":  "Likely Router / Gateway",
+                        "service_confidence_percent":  72,
+                        "service_reason":  "DNS plus web administration service detected.",
+                        "open_ports":  [
+                                           53,
+                                           80
+                                       ],
+                        "services":  [
+                                         {
+                                             "port":  53,
+                                             "service":  "DNS",
+                                             "state":  "open"
+                                         },
+                                         {
+                                             "port":  80,
+                                             "service":  "HTTP",
+                                             "state":  "open"
+                                         }
+                                     ],
+                        "service_profiled_utc":  "2026-06-08T23:23:33.2387000Z",
+                        "label_source":  "service_classifier_v1"
                     },
                     {
                         "ip":  "192.168.4.24",
@@ -125,13 +145,13 @@
                         "trust_state":  "unknown",
                         "change_count":  2,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
-                        "last_seen_utc":  "2026-05-26T20:24:05.7533448Z",
+                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
                         "last_reviewed_utc":  "",
                         "review_decision_source":  "engine_observed",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
                         "last_change_type":  "schema_migrated",
-                        "last_change_utc":  "2026-05-26T20:24:06.8955197Z",
+                        "last_change_utc":  "2026-05-26T23:30:20.7745384Z",
                         "last_trust_update_utc":  "",
                         "notes":  "",
                         "anomaly_score":  0,

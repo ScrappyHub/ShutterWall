@@ -1,4 +1,4 @@
-param()
+﻿param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -47,7 +47,9 @@ Invoke-ShutterWall -CommandArgs @("ids-hooks")
 Invoke-ShutterWall -CommandArgs @("posture")
 
 # Watch daemon
+Invoke-ShutterWall -CommandArgs @("watch-cycle")
 Invoke-ShutterWall -CommandArgs @("watch-start")
 
 Write-Host ""
 Write-Host "SHUTTERWALL_RELEASE_ALIGNMENT_OK" -ForegroundColor Green
+

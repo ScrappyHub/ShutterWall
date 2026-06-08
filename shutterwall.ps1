@@ -346,6 +346,11 @@ switch ($Command) {
     return
   }
 
+  "service-promote" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_promote_service_profile_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "service-classify" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_service_classifier_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -381,5 +386,6 @@ switch ($Command) {
     return
   }
 }
+
 
 
