@@ -1,0 +1,10 @@
+﻿{
+    "schema":  "shutterwall.service_drift.v1",
+    "generated_utc":  "2026-06-09T17:45:37.2344504Z",
+    "baseline_path":  "C:\\dev\\shutterwall\\state\\service_baseline\\service_baseline.v1.json",
+    "service_profile_path":  "C:\\dev\\shutterwall\\state\\service_profiles\\service_profile.latest.v1.json",
+    "finding_count":  0,
+    "findings":  [
+
+                 ]
+}

@@ -346,6 +346,16 @@ switch ($Command) {
     return
   }
 
+  "service-baseline" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_service_baseline_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "service-drift" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_service_drift_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "service-promote" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_promote_service_profile_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -386,6 +396,7 @@ switch ($Command) {
     return
   }
 }
+
 
 
 
