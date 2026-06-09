@@ -1,6 +1,6 @@
 ﻿{
     "schema":  "shutterwall.device_registry.v1",
-    "updated_utc":  "2026-06-09T01:52:14.8267551Z",
+    "updated_utc":  "2026-06-09T13:32:47.7003708Z",
     "devices":  [
                     {
                         "ip":  "192.168.4.36",
@@ -133,7 +133,7 @@
                                              "state":  "open"
                                          }
                                      ],
-                        "service_profiled_utc":  "2026-06-09T01:52:14.8152367Z"
+                        "service_profiled_utc":  "2026-06-09T13:32:47.6853430Z"
                     },
                     {
                         "ip":  "192.168.4.24",
