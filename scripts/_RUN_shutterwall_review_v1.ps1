@@ -4,6 +4,20 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$ServiceProfilePath = Join-Path $RepoRoot "state\service_profiles\service_profile.latest.v1.json"
+$serviceProfiles = @()
+
+if(Test-Path -LiteralPath $ServiceProfilePath){
+  try {
+    $svc = Get-Content -LiteralPath $ServiceProfilePath -Raw | ConvertFrom-Json
+    if($svc.PSObject.Properties.Name -contains "profiles"){
+      $serviceProfiles = @($svc.profiles)
+    }
+  } catch {
+    $serviceProfiles = @()
+  }
+}
+
 function Get-ReviewProp {
   param(
     $Obj,
@@ -184,6 +198,14 @@ if($d.PSObject.Properties.Name -contains "open_ports"){ $servicePorts = (@($d.op
 
 if(-not [string]::IsNullOrWhiteSpace($serviceClass)){
   Write-Host ("REVIEW_SERVICE :: " + $d.ip + " :: " + $serviceClass + " :: confidence=" + $serviceConfidence + "% :: ports=" + $servicePorts)
+}
+
+$matchedService = @($serviceProfiles | Where-Object { [string]$_.ip -eq [string]$d.ip }) | Select-Object -First 1
+
+if($null -ne $matchedService){
+  $svcPorts = (@($matchedService.open_ports) -join ",")
+  Write-Host ("REVIEW_SERVICE :: " + $d.ip + " :: " + $matchedService.device_class + " :: confidence=" + $matchedService.confidence_percent + "% :: ports=" + $svcPorts)
+  Write-Host "REVIEW_SERVICE_DIRECT_V1"
 }
 
 Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
