@@ -138,7 +138,37 @@ Write-Host ("REVIEW_LATEST_DIFF_PATH: " + $doc.latest_diff_path)
 Write-Host ("REVIEW_ALERT_HISTORY_COUNT: " + $doc.alert_history_count)
 
 foreach($d in @($reviewDevices)){
-  Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
+  $priority = "normal"
+
+$changes = 0
+
+if($d.PSObject.Properties.Name -contains "changes"){
+  $changes = [int]$d.changes
+}
+
+if($trust -eq "unknown"){
+  $priority = "review_required"
+}
+
+if($changes -ge 3){
+  $priority = "elevated"
+}
+
+Write-Host ("REVIEW_PRIORITY :: " + $priority)
+
+$serviceClass = ""
+$serviceConfidence = ""
+$servicePorts = ""
+
+if($d.PSObject.Properties.Name -contains "service_class"){ $serviceClass = [string]$d.service_class }
+if($d.PSObject.Properties.Name -contains "service_confidence_percent"){ $serviceConfidence = [string]$d.service_confidence_percent }
+if($d.PSObject.Properties.Name -contains "open_ports"){ $servicePorts = (@($d.open_ports) -join ",") }
+
+if(-not [string]::IsNullOrWhiteSpace($serviceClass)){
+  Write-Host ("REVIEW_SERVICE :: " + $d.ip + " :: " + $serviceClass + " :: confidence=" + $serviceConfidence + "% :: ports=" + $servicePorts)
+}
+
+Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $d.label + " :: trust=" + $d.trust_state + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
 }
 
 Write-Host "SHUTTERWALL_REVIEW_V1_OK"

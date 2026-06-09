@@ -1,9 +1,9 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-05-26T23:20:19.8887389Z",
+    "updated_at_utc":  "2026-06-09T01:50:14.6829684Z",
     "mode":  "semi_active_defensive",
     "device_count":  5,
-    "timeline_event_count":  76,
+    "timeline_event_count":  86,
     "spoof_finding_count":  0,
     "finding_count":  5,
     "escalated_count":  0,
@@ -39,7 +39,7 @@
                          "severity":  "medium",
                          "type":  "trusted_device_changed",
                          "ip":  "192.168.4.1",
-                         "label":  "Needs Review",
+                         "label":  "Likely Router / Gateway",
                          "explanation":  "Trusted device has recorded change count greater than zero.",
                          "recommended_action":  "Review timeline and confirm the device still matches expectations."
                      },

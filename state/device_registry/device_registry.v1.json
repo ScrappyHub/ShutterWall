@@ -1,6 +1,6 @@
 ﻿{
     "schema":  "shutterwall.device_registry.v1",
-    "updated_utc":  "2026-06-08T23:23:33.2568469Z",
+    "updated_utc":  "2026-06-09T01:52:14.8267551Z",
     "devices":  [
                     {
                         "ip":  "192.168.4.36",
@@ -113,6 +113,7 @@
                         "confidence_history":  [
 
                                                ],
+                        "label_source":  "service_classifier_v1",
                         "service_class":  "Likely Router / Gateway",
                         "service_confidence_percent":  72,
                         "service_reason":  "DNS plus web administration service detected.",
@@ -132,8 +133,7 @@
                                              "state":  "open"
                                          }
                                      ],
-                        "service_profiled_utc":  "2026-06-08T23:23:33.2387000Z",
-                        "label_source":  "service_classifier_v1"
+                        "service_profiled_utc":  "2026-06-09T01:52:14.8152367Z"
                     },
                     {
                         "ip":  "192.168.4.24",

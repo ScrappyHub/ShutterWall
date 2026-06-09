@@ -319,16 +319,14 @@ foreach($f in $findings){
   if(Test-IdsSuppressed -Entry $entry -NowUtc $nowDt -SuppressHours $IdsSuppressHours){
     $suppressedCount += 1
   }
-  elseif(Test-IdsSuppressed -Entry $entry -NowUtc $nowDt -SuppressHours $IdsSuppressHours){
-    $suppressedCount += 1
-  }
-  elseif(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
-    Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
-    $entry.last_alerted_utc = $now
-  } else {
-    $suppressedCount += 1
-  } else {
-    $suppressedCount += 1
+  else {
+    if(-not (Test-AlertAlreadyWrittenToday -Path $AlertsPath -AlertType $alertType -Ip $alertIp -DayPrefix $dayPrefix)){
+      Append-Utf8NoBomLf -Path $AlertsPath -Text ($alert | ConvertTo-Json -Compress -Depth 20)
+      $entry.last_alerted_utc = $now
+    }
+    else {
+      $suppressedCount += 1
+    }
   }
 }
 
@@ -425,6 +423,56 @@ foreach($d in @(@($registry.devices))){
 $lowCount = @($findings | Where-Object { $_.severity -eq "low" }).Count
 $mediumCount = @($findings | Where-Object { $_.severity -eq "medium" }).Count
 $highCount = @($findings | Where-Object { $_.severity -eq "high" }).Count
+
+foreach($d in @($devices)){
+  $trust = ""
+  if($d.PSObject.Properties.Name -contains "trust"){ $trust = [string]$d.trust }
+
+  $ip = ""
+  if($d.PSObject.Properties.Name -contains "ip"){ $ip = [string]$d.ip }
+
+  $ports = @()
+  if($d.PSObject.Properties.Name -contains "open_ports"){ $ports = @($d.open_ports | ForEach-Object { [int]$_ }) }
+
+  $serviceClass = ""
+  if($d.PSObject.Properties.Name -contains "service_class"){ $serviceClass = [string]$d.service_class }
+
+  if(($trust -eq "unknown") -and (($ports -contains 80) -or ($ports -contains 443) -or ($ports -contains 8080) -or ($ports -contains 8443))){
+    $findings += [PSCustomObject]@{
+      severity = "medium"
+      type = "unknown_device_exposes_http"
+      ip = $ip
+      explanation = "Unknown device exposes a web administration or HTTP service."
+    }
+  }
+
+  if(($trust -eq "unknown") -and ($ports -contains 554)){
+    $findings += [PSCustomObject]@{
+      severity = "medium"
+      type = "unknown_camera_service_detected"
+      ip = $ip
+      explanation = "Unknown device exposes RTSP camera streaming service."
+    }
+  }
+
+  if(($trust -eq "unknown") -and (($ports -contains 445) -or ($ports -contains 3389))){
+    $findings += [PSCustomObject]@{
+      severity = "medium"
+      type = "unknown_windows_service_detected"
+      ip = $ip
+      explanation = "Unknown device exposes Windows SMB or RDP service."
+    }
+  }
+
+  if(($trust -eq "trusted") -and ($serviceClass -match "Router") -and (($ports -notcontains 53) -or (($ports -notcontains 80) -and ($ports -notcontains 443)))){
+    $findings += [PSCustomObject]@{
+      severity = "medium"
+      type = "trusted_gateway_service_drift"
+      ip = $ip
+      explanation = "Trusted gateway service profile no longer matches expected DNS plus web-admin shape."
+    }
+  }
+}
 
 Write-Host ("IDS_HOOKS_FINDING_COUNT: " + @($findings).Count)
 Write-Host ("IDS_HOOKS_ESCALATED_COUNT: " + @($escalatedFindings).Count)
