@@ -6,6 +6,19 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ServiceProfilePath = Join-Path $RepoRoot "state\service_profiles\service_profile.latest.v1.json"
 $serviceProfiles = @()
+$CorrelationPath = Join-Path $RepoRoot "state\correlation\correlation.latest.v1.json"
+$correlations = @()
+
+if(Test-Path -LiteralPath $CorrelationPath){
+  try {
+    $corrState = Get-Content -LiteralPath $CorrelationPath -Raw | ConvertFrom-Json
+    if($corrState.PSObject.Properties.Name -contains "correlations"){
+      $correlations = @($corrState.correlations)
+    }
+  } catch {
+    $correlations = @()
+  }
+}
 
 if(Test-Path -LiteralPath $ServiceProfilePath){
   try {
@@ -15,6 +28,19 @@ if(Test-Path -LiteralPath $ServiceProfilePath){
     }
   } catch {
     $serviceProfiles = @()
+$CorrelationPath = Join-Path $RepoRoot "state\correlation\correlation.latest.v1.json"
+$correlations = @()
+
+if(Test-Path -LiteralPath $CorrelationPath){
+  try {
+    $corrState = Get-Content -LiteralPath $CorrelationPath -Raw | ConvertFrom-Json
+    if($corrState.PSObject.Properties.Name -contains "correlations"){
+      $correlations = @($corrState.correlations)
+    }
+  } catch {
+    $correlations = @()
+  }
+}
   }
 }
 
@@ -187,6 +213,11 @@ if($changes -ge 3){
 }
 
 Write-Host ("REVIEW_PRIORITY :: " + $priority)
+
+$matchedRisk = @($correlations | Where-Object { [string]$_.ip -eq [string]$d.ip }) | Select-Object -First 1
+if($null -ne $matchedRisk){
+  Write-Host ("REVIEW_RISK :: " + $d.ip + " :: " + $matchedRisk.risk_level + " :: score=" + $matchedRisk.risk_score + " :: reasons=" + (@($matchedRisk.reasons) -join ","))
+}
 
 $serviceClass = ""
 $serviceConfidence = ""

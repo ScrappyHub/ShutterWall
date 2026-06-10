@@ -1,13 +1,13 @@
 {
     "schema":  "shutterwall.ids_alert_memory.v1",
-    "updated_at_utc":  "2026-06-09T01:50:14.6829684Z",
+    "updated_at_utc":  "2026-06-10T05:06:18.9605382Z",
     "entries":  [
                     {
                         "key":  "|",
                         "first_seen_utc":  "2026-05-26T20:46:56.6502077Z",
-                        "last_seen_utc":  "2026-06-09T01:50:14.6829684Z",
-                        "repeat_count":  31,
-                        "last_alerted_utc":  "2026-06-09T01:50:14.6829684Z"
+                        "last_seen_utc":  "2026-06-10T05:06:18.9605382Z",
+                        "repeat_count":  41,
+                        "last_alerted_utc":  "2026-06-10T04:41:09.1982305Z"
                     },
                     {
                         "key":  "|",

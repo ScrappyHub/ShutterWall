@@ -1,0 +1,76 @@
+﻿{
+    "schema":  "shutterwall.correlation.v1",
+    "generated_utc":  "2026-06-10T05:06:20.1096862Z",
+    "device_count":  5,
+    "correlations":  [
+                         {
+                             "ip":  "192.168.4.36",
+                             "label":  "Needs Review",
+                             "trust":  "unknown",
+                             "risk_score":  15,
+                             "risk_level":  "low",
+                             "reasons":  [
+                                             "unknown_device_requires_review",
+                                             "unknown_trust"
+                                         ],
+                             "open_ports":  [
+
+                                            ]
+                         },
+                         {
+                             "ip":  "192.168.4.39",
+                             "label":  "Needs Review",
+                             "trust":  "unknown",
+                             "risk_score":  15,
+                             "risk_level":  "low",
+                             "reasons":  [
+                                             "unknown_device_requires_review",
+                                             "unknown_trust"
+                                         ],
+                             "open_ports":  [
+
+                                            ]
+                         },
+                         {
+                             "ip":  "192.168.4.30",
+                             "label":  "Needs Review",
+                             "trust":  "trusted",
+                             "risk_score":  15,
+                             "risk_level":  "low",
+                             "reasons":  [
+                                             "trusted_device_changed"
+                                         ],
+                             "open_ports":  [
+
+                                            ]
+                         },
+                         {
+                             "ip":  "192.168.4.1",
+                             "label":  "Likely Router / Gateway",
+                             "trust":  "trusted",
+                             "risk_score":  15,
+                             "risk_level":  "low",
+                             "reasons":  [
+                                             "trusted_device_changed"
+                                         ],
+                             "open_ports":  [
+                                                53,
+                                                80
+                                            ]
+                         },
+                         {
+                             "ip":  "192.168.4.24",
+                             "label":  "Needs Review",
+                             "trust":  "unknown",
+                             "risk_score":  15,
+                             "risk_level":  "low",
+                             "reasons":  [
+                                             "unknown_device_requires_review",
+                                             "unknown_trust"
+                                         ],
+                             "open_ports":  [
+
+                                            ]
+                         }
+                     ]
+}
