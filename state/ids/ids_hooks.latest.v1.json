@@ -1,16 +1,40 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-06-10T05:06:18.9605382Z",
+    "updated_at_utc":  "2026-06-10T23:37:35.1895360Z",
     "mode":  "semi_active_defensive",
-    "device_count":  5,
-    "timeline_event_count":  86,
+    "device_count":  40,
+    "timeline_event_count":  309,
     "spoof_finding_count":  0,
-    "finding_count":  5,
+    "finding_count":  40,
     "escalated_count":  0,
     "memory_entry_count":  5,
     "suppressed_count":  0,
     "suppression_window_hours":  24,
     "findings":  [
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.33",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.32",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.34",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
                      {
                          "severity":  "low",
                          "type":  "unknown_device_requires_review",
@@ -22,7 +46,39 @@
                      {
                          "severity":  "low",
                          "type":  "unknown_device_requires_review",
-                         "ip":  "192.168.4.39",
+                         "ip":  "192.168.4.35",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.29",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.28",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.3",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.31",
                          "label":  "Needs Review",
                          "explanation":  "Device is present in memory but has not been trusted or reviewed.",
                          "recommended_action":  "Open Review and classify this device."
@@ -36,6 +92,134 @@
                          "recommended_action":  "Review timeline and confirm the device still matches expectations."
                      },
                      {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.6",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.5",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.7",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.9",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.8",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.38",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.37",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.39",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.40",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.4",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.15",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.14",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.16",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.18",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.17",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.10",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
                          "severity":  "medium",
                          "type":  "trusted_device_changed",
                          "ip":  "192.168.4.1",
@@ -46,7 +230,103 @@
                      {
                          "severity":  "low",
                          "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.11",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.13",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.12",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
                          "ip":  "192.168.4.24",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.23",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.25",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.27",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.26",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.2",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.19",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.20",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.22",
+                         "label":  "Needs Review",
+                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
+                         "recommended_action":  "Open Review and classify this device."
+                     },
+                     {
+                         "severity":  "low",
+                         "type":  "unknown_device_requires_review",
+                         "ip":  "192.168.4.21",
                          "label":  "Needs Review",
                          "explanation":  "Device is present in memory but has not been trusted or reviewed.",
                          "recommended_action":  "Open Review and classify this device."

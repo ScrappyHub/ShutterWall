@@ -1,0 +1,15 @@
+﻿{
+    "schema":  "shutterwall.agent.heartbeat.v1",
+    "generated_utc":  "2026-06-10T23:37:33.0226124Z",
+    "device_id":  "0b6979398f5145e0a48d2a34870ea6fd",
+    "label":  "ANAKIN",
+    "hostname":  "ANAKIN",
+    "username":  "alecm",
+    "ipv4":  [
+                 "192.168.4.204",
+                 "192.168.56.1"
+             ],
+    "mode":  "ids_observe_review_first",
+    "ips_enabled":  false,
+    "auto_block_enabled":  false
+}

@@ -214,6 +214,17 @@ switch ($Command) {
     return
   }
 
+  "agent-enroll" {
+    $label = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { $env:COMPUTERNAME }
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_enroll_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Label",$label)
+    return
+  }
+
+  "agent-heartbeat" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_heartbeat_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "watch-cycle" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_watch_cycle_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -324,6 +335,27 @@ switch ($Command) {
     return
   }
 
+  "trust-device" {
+    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
+    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","trusted","-Label",$label)
+    return
+  }
+
+  "review-device" {
+    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
+    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","review","-Label",$label)
+    return
+  }
+
+  "suspicious-device" {
+    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
+    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","suspicious","-Label",$label)
+    return
+  }
+
   "registry" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_registry_v1.ps1" -ExtraArgs @("-Mode","list","-RepoRoot",$RepoRoot)
     return
@@ -421,6 +453,8 @@ switch ($Command) {
     return
   }
 }
+
+
 
 
 
