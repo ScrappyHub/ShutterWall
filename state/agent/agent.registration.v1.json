@@ -1,0 +1,13 @@
+﻿{
+    "schema":  "shutterwall.agent.registration.v1",
+    "device_label":  "ANAKIN",
+    "computer_name":  "ANAKIN",
+    "user_name":  "alecm",
+    "os":  "Microsoft Windows 11 Home",
+    "repo_root":  "C:\\dev\\shutterwall",
+    "mode":  "ids_observe_review_first",
+    "enrolled_utc":  "2026-06-10T05:54:53.2045637Z",
+    "ips_enabled":  false,
+    "auto_block_enabled":  false,
+    "watch_command":  "shutterwall watch-cycle"
+}

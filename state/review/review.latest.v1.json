@@ -1,31 +1,94 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-06-10T05:06:20.9853753Z",
+    "updated_at_utc":  "2026-06-10T05:55:04.2142076Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
-    "device_count":  5,
-    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\6de0b243691925f702260367c2d3eb4bb536eb96efe72b6aac1934ee194f9516",
-    "last_scanned_utc":  "2026-05-26T23:30:03.3727766Z",
+    "device_count":  40,
+    "latest_run_root":  "C:\\dev\\shutterwall\\proofs\\runs\\shutterwall\\22ed4ec4d7ff058900b63ed6e022700582aef2f18dc9f3c0f52b8d3704c6363f",
+    "last_scanned_utc":  "2026-06-10T05:18:52.5477164Z",
     "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json",
     "latest_alert_count":  2,
     "alert_history_count":  51,
     "devices":  [
                     {
+                        "ip":  "192.168.4.33",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.32",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.34",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
                         "ip":  "192.168.4.36",
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
-                        "change_count":  2,
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  3,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
-                        "ip":  "192.168.4.39",
+                        "ip":  "192.168.4.35",
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
-                        "change_count":  2,
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.29",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.28",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.3",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.31",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
@@ -33,26 +96,278 @@
                         "label":  "Needs Review",
                         "trust_state":  "trusted",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
-                        "change_count":  1,
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  2,
                         "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
+                    },
+                    {
+                        "ip":  "192.168.4.6",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.5",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.7",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.9",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.8",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.38",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.37",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.39",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  3,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.40",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.4",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.15",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.14",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.16",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.18",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.17",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.10",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
                         "ip":  "192.168.4.1",
                         "label":  "Likely Router / Gateway",
                         "trust_state":  "trusted",
                         "engine_guess":  "Likely Router / Gateway",
-                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
                         "change_count":  1,
                         "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
+                    },
+                    {
+                        "ip":  "192.168.4.11",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.13",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.12",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     },
                     {
                         "ip":  "192.168.4.24",
                         "label":  "Needs Review",
                         "trust_state":  "unknown",
                         "engine_guess":  "Needs Review",
-                        "last_seen_utc":  "2026-05-26T23:30:19.1723909Z",
-                        "change_count":  2,
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  3,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.23",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.25",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.27",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.26",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.2",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.19",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.20",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.22",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
+                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                    },
+                    {
+                        "ip":  "192.168.4.21",
+                        "label":  "Needs Review",
+                        "trust_state":  "unknown",
+                        "engine_guess":  "Needs Review",
+                        "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
+                        "change_count":  0,
                         "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
                     }
                 ]

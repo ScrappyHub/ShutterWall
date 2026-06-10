@@ -194,6 +194,26 @@ switch ($Command) {
   "quickstart" { Invoke-Quickstart; return }
   "inspect" { Invoke-Inspect; return }
 
+  "enroll-device" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_enroll_device_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "agent-status" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_status_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "agent-install" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_install_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
+  "agent-remove" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_remove_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "watch-cycle" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_watch_cycle_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -262,6 +282,11 @@ switch ($Command) {
       "-Ip",([string]$CommandArgs[0]),
       "-RepoRoot",$RepoRoot
     )
+    return
+  }
+
+  "correlate" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_correlation_engine_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
   }
 
@@ -396,6 +421,9 @@ switch ($Command) {
     return
   }
 }
+
+
+
 
 
 
