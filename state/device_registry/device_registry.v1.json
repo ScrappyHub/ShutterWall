@@ -1,7 +1,6 @@
-{
+﻿{
     "schema":  "shutterwall.device_registry.v1",
-    "updated_at_utc":  "2026-06-10T05:54:56.3767851Z",
-    "migration":  "registry_memory_fields_v1",
+    "updated_utc":  "2026-06-11T23:43:12.0327717Z",
     "devices":  [
                     {
                         "ip":  "192.168.4.33",
@@ -509,22 +508,20 @@
                     },
                     {
                         "ip":  "192.168.4.40",
-                        "label":  "Needs Review",
+                        "label":  "Unknown Device Test",
                         "user_label":  "",
                         "engine_guess":  "Needs Review",
                         "confidence_percent":  30,
                         "vendor_hint":  "unknown",
-                        "trust_state":  "unknown",
+                        "trust_state":  "trusted",
                         "change_count":  0,
                         "first_seen_utc":  "2026-06-10T05:18:53.0658650Z",
                         "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
-                        "last_reviewed_utc":  "",
-                        "review_decision_source":  "engine_observed",
+                        "last_reviewed_utc":  "2026-06-11T23:43:11.8592225Z",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
-                        "last_change_type":  "schema_migrated",
                         "last_change_utc":  "2026-06-10T05:54:56.3767851Z",
-                        "last_trust_update_utc":  "",
+                        "last_trust_update_utc":  "2026-06-11T23:43:11.8592225Z",
                         "notes":  "",
                         "anomaly_score":  0,
                         "persistence_score":  0,
@@ -533,7 +530,15 @@
                         "trust_decay_score":  0,
                         "confidence_history":  [
 
-                                               ]
+                                               ],
+                        "trust":  "trusted",
+                        "reviewed":  true,
+                        "needs_review":  false,
+                        "review_required":  false,
+                        "review_action":  "Recognized. Keep monitoring for fingerprint or baseline changes.",
+                        "reviewed_utc":  "2026-06-11T23:43:11.8502237Z",
+                        "review_decision_source":  "user_review",
+                        "last_change_type":  "manual_trust_enrollment"
                     },
                     {
                         "ip":  "192.168.4.4",
@@ -733,7 +738,7 @@
                     },
                     {
                         "ip":  "192.168.4.1",
-                        "label":  "Likely Router / Gateway",
+                        "label":  "Likely Router Gateway",
                         "user_label":  "Likely Router / Gateway",
                         "engine_guess":  "Likely Router / Gateway",
                         "confidence_percent":  55,
@@ -742,13 +747,11 @@
                         "change_count":  1,
                         "first_seen_utc":  "2026-05-06T22:36:55.0314851Z",
                         "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
-                        "last_reviewed_utc":  "",
-                        "review_decision_source":  "engine_observed",
+                        "last_reviewed_utc":  "2026-06-11T23:43:12.0327717Z",
                         "baseline_generation":  1,
                         "fingerprint_hash":  "",
-                        "last_change_type":  "schema_migrated",
                         "last_change_utc":  "2026-06-10T05:54:56.3767851Z",
-                        "last_trust_update_utc":  "",
+                        "last_trust_update_utc":  "2026-06-11T23:43:12.0327717Z",
                         "notes":  "",
                         "anomaly_score":  0,
                         "persistence_score":  0,
@@ -757,7 +760,15 @@
                         "trust_decay_score":  0,
                         "confidence_history":  [
 
-                                               ]
+                                               ],
+                        "trust":  "trusted",
+                        "reviewed":  true,
+                        "needs_review":  false,
+                        "review_required":  false,
+                        "review_action":  "Recognized. Keep monitoring for fingerprint or baseline changes.",
+                        "reviewed_utc":  "2026-06-11T23:43:12.0307694Z",
+                        "review_decision_source":  "user_review",
+                        "last_change_type":  "manual_trust_enrollment"
                     },
                     {
                         "ip":  "192.168.4.11",

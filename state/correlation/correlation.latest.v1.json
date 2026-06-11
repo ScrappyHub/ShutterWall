@@ -1,6 +1,6 @@
 ﻿{
     "schema":  "shutterwall.correlation.v1",
-    "generated_utc":  "2026-06-10T23:37:39.1216061Z",
+    "generated_utc":  "2026-06-11T23:43:14.8863498Z",
     "device_count":  40,
     "correlations":  [
                          {
@@ -256,13 +256,12 @@
                          },
                          {
                              "ip":  "192.168.4.40",
-                             "label":  "Needs Review",
-                             "trust":  "unknown",
-                             "risk_score":  15,
-                             "risk_level":  "low",
+                             "label":  "Unknown Device Test",
+                             "trust":  "trusted",
+                             "risk_score":  5,
+                             "risk_level":  "normal",
                              "reasons":  [
-                                             "unknown_device_requires_review",
-                                             "unknown_trust"
+                                             "unknown_device_requires_review"
                                          ],
                              "open_ports":  [
 
@@ -368,7 +367,7 @@
                          },
                          {
                              "ip":  "192.168.4.1",
-                             "label":  "Likely Router / Gateway",
+                             "label":  "Likely Router Gateway",
                              "trust":  "trusted",
                              "risk_score":  15,
                              "risk_level":  "low",

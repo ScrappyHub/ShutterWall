@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-06-10T23:37:42.2771836Z",
+    "updated_at_utc":  "2026-06-11T23:43:15.9583795Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "device_count":  40,
@@ -8,7 +8,7 @@
     "last_scanned_utc":  "2026-06-10T05:18:52.5477164Z",
     "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json",
     "latest_alert_count":  2,
-    "alert_history_count":  51,
+    "alert_history_count":  58,
     "devices":  [
                     {
                         "ip":  "192.168.4.33",
@@ -175,11 +175,11 @@
                     {
                         "ip":  "192.168.4.40",
                         "label":  "Needs Review",
-                        "trust_state":  "unknown",
+                        "trust_state":  "trusted",
                         "engine_guess":  "Needs Review",
                         "last_seen_utc":  "2026-06-10T05:54:55.2893512Z",
                         "change_count":  0,
-                        "recommended_action":  "Identify this device, then choose trusted, review, or suspicious."
+                        "recommended_action":  "Recognized. Keep monitoring for fingerprint or baseline changes."
                     },
                     {
                         "ip":  "192.168.4.4",

@@ -222,7 +222,7 @@ foreach($d in $devices){
   $label = if(Has-Prop $d "label"){ [string]$d.label } else { "Needs Review" }
   $changes = if(Has-Prop $d "change_count"){ [int]$d.change_count } else { 0 }
 
-  if($trust -eq "unknown"){
+  if($trust -eq "unknown" -and -not (Is-DeviceReviewedOrKnown $d)){
     $findings += [ordered]@{
       severity = "low"
       type = "unknown_device_requires_review"
@@ -340,6 +340,24 @@ Save-IdsMemory -Memory $idsMemory -Path $IdsMemoryPath
 
 Write-Host ("IDS_HOOKS_PATH: " + $IdsPath)
 
+
+function Is-DeviceReviewedOrKnown {
+  param($Device)
+
+  if($null -eq $Device){ return $false }
+
+  $trust = ""
+  if(@($Device.PSObject.Properties.Name) -contains "trust_state"){ $trust = [string]$Device.trust_state }
+  elseif(@($Device.PSObject.Properties.Name) -contains "trust"){ $trust = [string]$Device.trust }
+
+  if($trust -in @("trusted","review","suspicious","blocked")){ return $true }
+
+  if(@($Device.PSObject.Properties.Name) -contains "reviewed" -and [bool]$Device.reviewed){ return $true }
+  if(@($Device.PSObject.Properties.Name) -contains "review_required" -and -not [bool]$Device.review_required){ return $true }
+  if(@($Device.PSObject.Properties.Name) -contains "needs_review" -and -not [bool]$Device.needs_review){ return $true }
+
+  return $false
+}
 $RegistryStatePath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 
 $registry = @{

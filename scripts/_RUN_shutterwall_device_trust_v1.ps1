@@ -1,4 +1,4 @@
-﻿param(
+param(
   [string]$RepoRoot = "C:\dev\shutterwall",
   [string]$Ip = "",
   [string]$Trust = "trusted",
@@ -8,6 +8,21 @@
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
+function Set-DevicePropSafe {
+  param(
+    $Obj,
+    [string]$Name,
+    $Value
+  )
+
+  if(@($Obj.PSObject.Properties.Name) -notcontains $Name){
+    $Obj | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+  }
+  else{
+    $Obj.$Name = $Value
+  }
+}
+
 
 if([string]::IsNullOrWhiteSpace($Ip)){ throw "DEVICE_IP_REQUIRED" }
 
@@ -29,11 +44,18 @@ if([string]::IsNullOrWhiteSpace($Label)){
   }
 }
 
-$d.trust = $Trust
-$d.label = $Label
+Set-DevicePropSafe -Obj $d -Name "trust_state" -Value $Trust
+Set-DevicePropSafe -Obj $d -Name "trust" -Value $Trust
+Set-DevicePropSafe -Obj $d -Name "label" -Value $Label
 $d | Add-Member -NotePropertyName reviewed_utc -NotePropertyValue ([DateTime]::UtcNow.ToString("o")) -Force
 $d | Add-Member -NotePropertyName review_decision_source -NotePropertyValue $Reason -Force
 $d | Add-Member -NotePropertyName last_change_type -NotePropertyValue "manual_trust_enrollment" -Force
+Set-DevicePropSafe -Obj $d -Name "reviewed" -Value $true
+Set-DevicePropSafe -Obj $d -Name "needs_review" -Value $false
+Set-DevicePropSafe -Obj $d -Name "review_required" -Value $false
+Set-DevicePropSafe -Obj $d -Name "last_reviewed_utc" -Value ([DateTime]::UtcNow.ToString("o"))
+Set-DevicePropSafe -Obj $d -Name "last_trust_update_utc" -Value ([DateTime]::UtcNow.ToString("o"))
+Set-DevicePropSafe -Obj $d -Name "review_action" -Value "Recognized. Keep monitoring for fingerprint or baseline changes."
 
 $out = [ordered]@{
   schema = "shutterwall.device_registry.v1"
