@@ -1,6 +1,6 @@
 ﻿{
     "schema":  "shutterwall.correlation.v1",
-    "generated_utc":  "2026-06-11T23:43:14.8863498Z",
+    "generated_utc":  "2026-06-12T01:20:56.6452137Z",
     "device_count":  40,
     "correlations":  [
                          {
@@ -258,10 +258,10 @@
                              "ip":  "192.168.4.40",
                              "label":  "Unknown Device Test",
                              "trust":  "trusted",
-                             "risk_score":  5,
+                             "risk_score":  0,
                              "risk_level":  "normal",
                              "reasons":  [
-                                             "unknown_device_requires_review"
+
                                          ],
                              "open_ports":  [
 

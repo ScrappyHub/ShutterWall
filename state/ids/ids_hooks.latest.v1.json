@@ -1,11 +1,11 @@
 {
     "schema":  "shutterwall.ids_hooks.v1",
-    "updated_at_utc":  "2026-06-11T17:04:31.4152484Z",
+    "updated_at_utc":  "2026-06-12T01:20:53.7071901Z",
     "mode":  "semi_active_defensive",
     "device_count":  40,
     "timeline_event_count":  309,
     "spoof_finding_count":  0,
-    "finding_count":  40,
+    "finding_count":  39,
     "escalated_count":  0,
     "memory_entry_count":  5,
     "suppressed_count":  0,
@@ -152,14 +152,6 @@
                          "type":  "unknown_device_requires_review",
                          "ip":  "192.168.4.39",
                          "label":  "Needs Review",
-                         "explanation":  "Device is present in memory but has not been trusted or reviewed.",
-                         "recommended_action":  "Open Review and classify this device."
-                     },
-                     {
-                         "severity":  "low",
-                         "type":  "unknown_device_requires_review",
-                         "ip":  "192.168.4.40",
-                         "label":  "Unknown Device Test",
                          "explanation":  "Device is present in memory but has not been trusted or reviewed.",
                          "recommended_action":  "Open Review and classify this device."
                      },
