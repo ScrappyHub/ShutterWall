@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-06-12T01:20:58.1241858Z",
+    "updated_at_utc":  "2026-06-13T05:18:55.3828824Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "device_count":  40,
@@ -8,7 +8,7 @@
     "last_scanned_utc":  "2026-06-10T05:18:52.5477164Z",
     "latest_diff_path":  "C:\\dev\\shutterwall\\proofs\\diff\\diff_v1_20260508_000805Z.json",
     "latest_alert_count":  2,
-    "alert_history_count":  58,
+    "alert_history_count":  59,
     "devices":  [
                     {
                         "ip":  "192.168.4.33",

@@ -4,6 +4,61 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+function Is-ReviewDeviceKnown {
+  param($Device)
+
+  if($null -eq $Device){ return $false }
+
+  $trust = ""
+  if(@($Device.PSObject.Properties.Name) -contains "trust_state"){ $trust = [string]$Device.trust_state }
+  elseif(@($Device.PSObject.Properties.Name) -contains "trust"){ $trust = [string]$Device.trust }
+
+  if($trust -in @("trusted","review","suspicious","blocked")){ return $true }
+
+  if(@($Device.PSObject.Properties.Name) -contains "reviewed" -and [bool]$Device.reviewed){ return $true }
+  if(@($Device.PSObject.Properties.Name) -contains "review_required" -and -not [bool]$Device.review_required){ return $true }
+  if(@($Device.PSObject.Properties.Name) -contains "needs_review" -and -not [bool]$Device.needs_review){ return $true }
+
+  return $false
+}
+
+function Get-ReviewDeviceLabel {
+  param($Device)
+
+  if(Is-ReviewDeviceKnown $Device){
+    $trust = ""
+    if(@($Device.PSObject.Properties.Name) -contains "trust_state"){ $trust = [string]$Device.trust_state }
+    elseif(@($Device.PSObject.Properties.Name) -contains "trust"){ $trust = [string]$Device.trust }
+
+    if($trust -eq "trusted"){ return "Trusted Device" }
+    if($trust -eq "review"){ return "Reviewed Device" }
+    if($trust -eq "suspicious"){ return "Suspicious Device" }
+    if($trust -eq "blocked"){ return "Blocked Device" }
+
+    return "Reviewed Device"
+  }
+
+  return "Needs Review"
+}
+
+function Get-ReviewDevicePriority {
+  param($Device)
+
+  if(Is-ReviewDeviceKnown $Device){ return "recognized" }
+
+  return "review_required"
+}
+
+function Get-ReviewTrustState {
+  param($Device)
+
+  if($null -eq $Device){ return "unknown" }
+  if(@($Device.PSObject.Properties.Name) -contains "trust"){ return [string]$Device.trust }
+  if(@($Device.PSObject.Properties.Name) -contains "trust_state"){ return [string]$Device.trust_state }
+
+  return "unknown"
+}
+
 $ServiceProfilePath = Join-Path $RepoRoot "state\service_profiles\service_profile.latest.v1.json"
 $serviceProfiles = @()
 $CorrelationPath = Join-Path $RepoRoot "state\correlation\correlation.latest.v1.json"
@@ -212,6 +267,7 @@ if($changes -ge 3){
   $priority = "elevated"
 }
 
+$priority = Get-ReviewDevicePriority $d
 Write-Host ("REVIEW_PRIORITY :: " + $priority)
 
 $matchedRisk = @($correlations | Where-Object { [string]$_.ip -eq [string]$d.ip }) | Select-Object -First 1

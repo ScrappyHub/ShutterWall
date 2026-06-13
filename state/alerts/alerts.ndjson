@@ -56,3 +56,4 @@
 {"schema":"shutterwall.alert.v1","timestamp_utc":"2026-06-11T21:01:44.0762062Z","severity":"low","alert_type":"device_trust_enrolled","ip":"192.168.4.1","message":"Device trust state set to trusted with label Likely Router Gateway."}
 {"schema":"shutterwall.alert.v1","timestamp_utc":"2026-06-11T23:43:11.8682229Z","severity":"low","alert_type":"device_trust_enrolled","ip":"192.168.4.40","message":"Device trust state set to trusted with label Unknown Device Test."}
 {"schema":"shutterwall.alert.v1","timestamp_utc":"2026-06-11T23:43:12.0387698Z","severity":"low","alert_type":"device_trust_enrolled","ip":"192.168.4.1","message":"Device trust state set to trusted with label Likely Router Gateway."}
+{"schema":"shutterwall.alert.v1","timestamp_utc":"2026-06-13T05:18:53.7259606Z","severity":"medium","alert_type":"ids_hook_unknown_device_requires_review","ip":"192.168.4.33","message":"Device is present in memory but has not been trusted or reviewed. repeat_count=486"}
