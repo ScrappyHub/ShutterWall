@@ -4,6 +4,96 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+function Get-ReviewRegistryDeviceByIp {
+  param([string]$Ip)
+
+  if([string]::IsNullOrWhiteSpace($Ip)){ return $null }
+
+  foreach($rd in @($ReviewRegistryDevices)){
+    if([string]$rd.ip -eq $Ip){ return $rd }
+  }
+
+  return $null
+}
+
+function Get-ResolvedReviewTrust {
+  param($Device)
+
+  if($null -eq $Device){ return "unknown" }
+
+  $ip = ""
+  if(@($Device.PSObject.Properties.Name) -contains "ip"){ $ip = [string]$Device.ip }
+
+  $rd = Get-ReviewRegistryDeviceByIp -Ip $ip
+
+  if($null -ne $rd){
+    if(@($rd.PSObject.Properties.Name) -contains "trust_state"){
+      $v = [string]$rd.trust_state
+      if(-not [string]::IsNullOrWhiteSpace($v) -and $v -ne "unknown"){ return $v }
+    }
+
+    if(@($rd.PSObject.Properties.Name) -contains "trust"){
+      $v = [string]$rd.trust
+      if(-not [string]::IsNullOrWhiteSpace($v) -and $v -ne "unknown"){ return $v }
+    }
+  }
+
+  if(@($Device.PSObject.Properties.Name) -contains "trust_state"){
+    $v = [string]$Device.trust_state
+    if(-not [string]::IsNullOrWhiteSpace($v)){ return $v }
+  }
+
+  if(@($Device.PSObject.Properties.Name) -contains "trust"){
+    $v = [string]$Device.trust
+    if(-not [string]::IsNullOrWhiteSpace($v)){ return $v }
+  }
+
+  return "unknown"
+}
+
+function Get-ResolvedReviewLabel {
+  param($Device)
+
+  $ip = ""
+  if($null -ne $Device -and @($Device.PSObject.Properties.Name) -contains "ip"){
+    $ip = [string]$Device.ip
+  }
+
+  $rd = Get-ReviewRegistryDeviceByIp -Ip $ip
+  $trust = Get-ResolvedReviewTrust $Device
+
+  if($null -ne $rd -and @($rd.PSObject.Properties.Name) -contains "label"){
+    $label = [string]$rd.label
+    if(-not [string]::IsNullOrWhiteSpace($label) -and $label -ne "Needs Review"){
+      return $label
+    }
+  }
+
+  if($trust -eq "trusted"){ return "Trusted Device" }
+  if($trust -eq "review"){ return "Reviewed Device" }
+  if($trust -eq "suspicious"){ return "Suspicious Device" }
+  if($trust -eq "blocked"){ return "Blocked Device" }
+
+  if($null -ne $Device -and @($Device.PSObject.Properties.Name) -contains "label"){
+    $label = [string]$Device.label
+    if(-not [string]::IsNullOrWhiteSpace($label)){ return $label }
+  }
+
+  return "Needs Review"
+}
+
+function Get-ResolvedReviewPriority {
+  param($Device)
+
+  $trust = Get-ResolvedReviewTrust $Device
+
+  if($trust -in @("trusted","review","suspicious","blocked")){
+    return "recognized"
+  }
+
+  return "review_required"
+}
+
 $ReviewRegistryPath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 $ReviewRegistryDevices = @()
 
@@ -302,7 +392,7 @@ foreach($d in $devices){
   if($trust -eq "trusted"){ $action = "Recognized. Keep monitoring for fingerprint or baseline changes." }
   elseif($trust -eq "review"){ $action = "Verify this device before trusting it." }
   elseif($trust -eq "blocked"){ $action = "Marked suspicious. Confirm before enforcement." }
-  else { $action = "$(if((Get-CanonicalReviewTrust $d) -in @("trusted","review","suspicious","blocked")){ "Recognized. Keep monitoring for fingerprint or baseline changes." } else { "$(if((Get-CanonicalReviewTrust $d) -in @("trusted","review","suspicious","blocked")){ "Recognized. Keep monitoring for fingerprint or baseline changes." } else { "Identify this device, then choose trusted, review, or suspicious." })" })" }
+  else { $action = "$(if((Get-ResolvedReviewTrust $d) -in @("trusted","review","suspicious","blocked")){ "Recognized. Keep monitoring for fingerprint or baseline changes." } else { "$(if((Get-ResolvedReviewTrust $d) -in @("trusted","review","suspicious","blocked")){ "Recognized. Keep monitoring for fingerprint or baseline changes." } else { "Identify this device, then choose trusted, review, or suspicious." })" })" }
 
   $reviewDevices += [ordered]@{
     ip = [string]$d.ip
@@ -358,7 +448,7 @@ if($changes -ge 3){
 
 $priority = Get-ReviewDevicePriority $d
 $d = Get-CanonicalReviewDevice -Device $d -RegistryDevices $ReviewRegistryDevices
-$priority = Get-CanonicalReviewPriority $d
+$priority = Get-ResolvedReviewPriority $d
 Write-Host ("REVIEW_PRIORITY :: " + $priority)
 
 $matchedRisk = @($correlations | Where-Object { [string]$_.ip -eq [string]$d.ip }) | Select-Object -First 1
@@ -386,7 +476,7 @@ if($null -ne $matchedService){
   Write-Host "REVIEW_SERVICE_DIRECT_V1"
 }
 
-Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + (Get-CanonicalReviewLabel $d) + " :: trust=" + (Get-CanonicalReviewTrust $d) + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
+Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + (Get-ResolvedReviewLabel $d) + " :: trust=" + (Get-ResolvedReviewTrust $d) + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
 }
 
 Write-Host "SHUTTERWALL_REVIEW_V1_OK"
