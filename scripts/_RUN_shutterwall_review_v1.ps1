@@ -430,6 +430,32 @@ Write-Host ("REVIEW_LATEST_DIFF_PATH: " + $doc.latest_diff_path)
 Write-Host ("REVIEW_ALERT_HISTORY_COUNT: " + $doc.alert_history_count)
 
 foreach($d in @($reviewDevices)){
+  $registryHydratedDevice = $null
+  $registryHydratePath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
+
+  if(Test-Path -LiteralPath $registryHydratePath){
+    try {
+      $registryHydrateDoc = Get-Content -LiteralPath $registryHydratePath -Raw | ConvertFrom-Json
+      if($registryHydrateDoc.PSObject.Properties.Name -contains "devices"){
+        $registryHydratedDevice = @($registryHydrateDoc.devices | Where-Object { [string]$_.ip -eq [string]$d.ip }) | Select-Object -First 1
+      }
+    } catch {
+      $registryHydratedDevice = $null
+    }
+  }
+
+  if($null -ne $registryHydratedDevice){
+    foreach($propName in @("trust_state","trust","label","user_label","last_reviewed_utc","review_decision_source","last_change_type")){
+      if($registryHydratedDevice.PSObject.Properties.Name -contains $propName){
+        $propValue = $registryHydratedDevice.$propName
+        if($d.PSObject.Properties.Name -contains $propName){
+          $d.$propName = $propValue
+        } else {
+          $d | Add-Member -NotePropertyName $propName -NotePropertyValue $propValue -Force
+        }
+      }
+    }
+  }
   $priority = "normal"
 
 $changes = 0
