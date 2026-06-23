@@ -429,7 +429,44 @@ Write-Host ("REVIEW_LAST_SCANNED_UTC: " + $doc.last_scanned_utc)
 Write-Host ("REVIEW_LATEST_DIFF_PATH: " + $doc.latest_diff_path)
 Write-Host ("REVIEW_ALERT_HISTORY_COUNT: " + $doc.alert_history_count)
 
+$reviewRegistryByIp = @{}
+foreach($rd in @($ReviewRegistryDevices)){
+  if($rd.PSObject.Properties.Name -contains "ip"){
+    $reviewRegistryByIp[[string]$rd.ip] = $rd
+  }
+}
+
 foreach($d in @($reviewDevices)){
+  $rdirect = $null
+  if($reviewRegistryByIp.ContainsKey([string]$d.ip)){
+    $rdirect = $reviewRegistryByIp[[string]$d.ip]
+  }
+
+  $resolvedTrustDirect = "unknown"
+  $resolvedLabelDirect = "Needs Review"
+
+  if($null -ne $rdirect){
+    if($rdirect.PSObject.Properties.Name -contains "trust_state" -and -not [string]::IsNullOrWhiteSpace([string]$rdirect.trust_state)){
+      $resolvedTrustDirect = [string]$rdirect.trust_state
+    }
+    elseif($rdirect.PSObject.Properties.Name -contains "trust" -and -not [string]::IsNullOrWhiteSpace([string]$rdirect.trust)){
+      $resolvedTrustDirect = [string]$rdirect.trust
+    }
+
+    if($rdirect.PSObject.Properties.Name -contains "label" -and -not [string]::IsNullOrWhiteSpace([string]$rdirect.label) -and [string]$rdirect.label -ne "Needs Review"){
+      $resolvedLabelDirect = [string]$rdirect.label
+    }
+    elseif($rdirect.PSObject.Properties.Name -contains "user_label" -and -not [string]::IsNullOrWhiteSpace([string]$rdirect.user_label)){
+      $resolvedLabelDirect = [string]$rdirect.user_label
+    }
+    elseif($resolvedTrustDirect -eq "trusted"){
+      $resolvedLabelDirect = "Trusted Device"
+    }
+  }
+  else {
+    $resolvedTrustDirect = Get-ResolvedReviewTrust $d
+    $resolvedLabelDirect = Get-ResolvedReviewLabel $d
+  }
   $registryHydratedDevice = $null
   $registryHydratePath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 
@@ -502,7 +539,7 @@ if($null -ne $matchedService){
   Write-Host "REVIEW_SERVICE_DIRECT_V1"
 }
 
-Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + (Get-ResolvedReviewLabel $d) + " :: trust=" + (Get-ResolvedReviewTrust $d) + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
+Write-Host ("REVIEW_DEVICE :: " + $d.ip + " :: " + $resolvedLabelDirect + " :: trust=" + $resolvedTrustDirect + " :: changes=" + $d.change_count + " :: first_seen=" + $(if($d.PSObject.Properties.Name -contains "first_seen_utc"){ (Get-PropValue $d "first_seen_utc" "") } else { "" }) + " :: last_seen=" + $d.last_seen_utc + " :: reviewed=" + $(if($d.PSObject.Properties.Name -contains "last_reviewed_utc"){ (Get-PropValue $d "last_reviewed_utc" "") } else { "" }) + " :: source=" + $(if($d.PSObject.Properties.Name -contains "review_decision_source"){ (Get-PropValue $d "review_decision_source" "") } else { "" }) + " :: change=" + $(if($d.PSObject.Properties.Name -contains "last_change_type"){ (Get-PropValue $d "last_change_type" "") } else { "" }) + " :: action=" + $d.recommended_action)
 }
 
 Write-Host "SHUTTERWALL_REVIEW_V1_OK"
