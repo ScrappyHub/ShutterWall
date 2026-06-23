@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Position=0)]
   [string]$Command = "help",
 
@@ -18,6 +18,52 @@ function Test-IsAdministrator {
   $id = [System.Security.Principal.WindowsIdentity]::GetCurrent()
   $p = New-Object System.Security.Principal.WindowsPrincipal($id)
   return $p.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+
+function Get-ShutterWallCommandTail {
+  param([object[]]$CommandArgs)
+
+  $items = @($CommandArgs)
+  if($items.Count -eq 0){ return @() }
+
+  # Handles both shapes:
+  # 1) @("trust-device","192.168.4.1","Label")
+  # 2) @("192.168.4.1","Label")
+  if([string]$items[0] -in @("trust-device","review-device","suspicious-device")){
+    return @($items | Select-Object -Skip 1)
+  }
+
+  return @($items)
+}
+
+function Invoke-ShutterWallDeviceTrustCommand {
+  param(
+    [string]$Trust,
+    [object[]]$CommandArgs,
+    [string]$RepoRoot
+  )
+
+  $tail = @(Get-ShutterWallCommandTail -CommandArgs $CommandArgs)
+
+  $ip = if($tail.Count -ge 1){ [string]$tail[0] } else { "" }
+  $label = if($tail.Count -ge 2){ [string](@($tail | Select-Object -Skip 1) -join " ") } else { "" }
+
+  if([string]::IsNullOrWhiteSpace($ip)){
+    throw "USAGE: shutterwall <trust-device|review-device|suspicious-device> <ip> [label]"
+  }
+
+  $params = @{
+    RepoRoot = $RepoRoot
+    Ip = $ip
+    Trust = $Trust
+  }
+
+  if(-not [string]::IsNullOrWhiteSpace($label)){
+    $params["Label"] = $label
+  }
+
+  & (Join-Path $RepoRoot "scripts\_RUN_shutterwall_device_trust_v1.ps1") @params
 }
 
 function Invoke-Script {
@@ -301,6 +347,11 @@ switch ($Command) {
     return
   }
 
+  "agent-once" {
+    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_agent_once_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    return
+  }
+
   "review" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_review_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
     return
@@ -336,26 +387,19 @@ switch ($Command) {
   }
 
   "trust-device" {
-    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
-    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
-    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","trusted","-Label",$label)
+    Invoke-ShutterWallDeviceTrustCommand -Trust "trusted" -CommandArgs $CommandArgs -RepoRoot $RepoRoot
     return
   }
 
   "review-device" {
-    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
-    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
-    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","review","-Label",$label)
+    Invoke-ShutterWallDeviceTrustCommand -Trust "review" -CommandArgs $CommandArgs -RepoRoot $RepoRoot
     return
   }
 
   "suspicious-device" {
-    $ip = if($CommandArgs.Count -ge 2){ $CommandArgs[1] } else { "" }
-    $label = if($CommandArgs.Count -ge 3){ $CommandArgs[2] } else { "" }
-    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_trust_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot,"-Ip",$ip,"-Trust","suspicious","-Label",$label)
+    Invoke-ShutterWallDeviceTrustCommand -Trust "suspicious" -CommandArgs $CommandArgs -RepoRoot $RepoRoot
     return
   }
-
   "registry" {
     Invoke-Script -ScriptName "scripts\_RUN_shutterwall_device_registry_v1.ps1" -ExtraArgs @("-Mode","list","-RepoRoot",$RepoRoot)
     return
