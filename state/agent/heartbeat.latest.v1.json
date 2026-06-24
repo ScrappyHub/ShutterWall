@@ -1,0 +1,12 @@
+﻿{
+    "schema":  "shutterwall.agent.heartbeat.v1",
+    "status":  "ok",
+    "started_utc":  "2026-06-24T16:05:32.3009563Z",
+    "finished_utc":  "2026-06-24T16:07:36.4640740Z",
+    "duration_seconds":  124,
+    "device_count":  40,
+    "ids_finding_count":  39,
+    "correlation_device_count":  40,
+    "review_device_count":  40,
+    "mode":  "once"
+}

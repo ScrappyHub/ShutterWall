@@ -13,18 +13,43 @@ $HeartbeatPath = Join-Path $HeartbeatDir "heartbeat.latest.v1.json"
 
 New-Item -ItemType Directory -Force -Path $HeartbeatDir,$ProofDir | Out-Null
 
-function Invoke-ShutterWallStep {
+function Invoke-AgentScript {
   param(
     [string]$Name,
-    [string[]]$Args
+    [string]$ScriptName,
+    [int]$TimeoutMs = 120000
   )
+
+  $scriptPath = Join-Path $RepoRoot $ScriptName
+  if(-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)){
+    throw ("AGENT_SCRIPT_MISSING: " + $Name + " :: " + $scriptPath)
+  }
 
   Write-Host ("AGENT_STEP_START :: " + $Name)
 
-  & (Join-Path $RepoRoot "shutterwall.ps1") @Args
+  $argList = @(
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    $scriptPath,
+    "-RepoRoot",
+    $RepoRoot
+  )
 
-  if($LASTEXITCODE -ne 0){
-    throw ("AGENT_STEP_FAILED: " + $Name)
+  $p = Start-Process `
+    -FilePath "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" `
+    -ArgumentList $argList `
+    -PassThru `
+    -NoNewWindow
+
+  if(-not $p.WaitForExit($TimeoutMs)){
+    try { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue } catch {}
+    throw ("AGENT_STEP_TIMEOUT: " + $Name)
+  }
+
+  if($null -ne $p.ExitCode -and [int]$p.ExitCode -ne 0){
+    throw ("AGENT_STEP_FAILED: " + $Name + " :: exit=" + [string]$p.ExitCode)
   }
 
   Write-Host ("AGENT_STEP_OK :: " + $Name)
@@ -32,19 +57,19 @@ function Invoke-ShutterWallStep {
 
 $started = [DateTime]::UtcNow
 
-Invoke-ShutterWallStep -Name "lab-scan" -Args @("lab-scan")
-Invoke-ShutterWallStep -Name "service-classify" -Args @("service-classify")
-Invoke-ShutterWallStep -Name "service-promote" -Args @("service-promote")
+Invoke-AgentScript -Name "lab-scan" -ScriptName "scripts\_RUN_shutterwall_lab_scan_v1.ps1"
+Invoke-AgentScript -Name "service-classify" -ScriptName "scripts\_RUN_shutterwall_service_classifier_v1.ps1"
+Invoke-AgentScript -Name "service-promote" -ScriptName "scripts\_RUN_shutterwall_promote_service_profile_v1.ps1"
 
 try {
-  Invoke-ShutterWallStep -Name "service-drift" -Args @("service-drift")
+  Invoke-AgentScript -Name "service-drift" -ScriptName "scripts\_RUN_shutterwall_service_drift_v1.ps1"
 } catch {
   Write-Host ("AGENT_STEP_WARN :: service-drift :: " + $_.Exception.Message)
 }
 
-Invoke-ShutterWallStep -Name "ids-hooks" -Args @("ids-hooks")
-Invoke-ShutterWallStep -Name "correlate" -Args @("correlate")
-Invoke-ShutterWallStep -Name "review" -Args @("review")
+Invoke-AgentScript -Name "ids-hooks" -ScriptName "scripts\_RUN_shutterwall_ids_hooks_v1.ps1"
+Invoke-AgentScript -Name "correlate" -ScriptName "scripts\_RUN_shutterwall_correlation_engine_v1.ps1"
+Invoke-AgentScript -Name "review" -ScriptName "scripts\_RUN_shutterwall_review_v1.ps1"
 
 $registryPath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 $idsPath = Join-Path $RepoRoot "state\ids\ids_hooks.latest.v1.json"
@@ -58,30 +83,22 @@ $reviewDeviceCount = 0
 
 if(Test-Path -LiteralPath $registryPath){
   $reg = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
-  if($reg.PSObject.Properties.Name -contains "devices"){
-    $deviceCount = @($reg.devices).Count
-  }
+  if($reg.PSObject.Properties.Name -contains "devices"){ $deviceCount = @($reg.devices).Count }
 }
 
 if(Test-Path -LiteralPath $idsPath){
   $ids = Get-Content -LiteralPath $idsPath -Raw | ConvertFrom-Json
-  if($ids.PSObject.Properties.Name -contains "findings"){
-    $findingCount = @($ids.findings).Count
-  }
+  if($ids.PSObject.Properties.Name -contains "findings"){ $findingCount = @($ids.findings).Count }
 }
 
 if(Test-Path -LiteralPath $correlationPath){
   $corr = Get-Content -LiteralPath $correlationPath -Raw | ConvertFrom-Json
-  if($corr.PSObject.Properties.Name -contains "correlations"){
-    $riskDeviceCount = @($corr.correlations).Count
-  }
+  if($corr.PSObject.Properties.Name -contains "correlations"){ $riskDeviceCount = @($corr.correlations).Count }
 }
 
 if(Test-Path -LiteralPath $reviewPath){
   $review = Get-Content -LiteralPath $reviewPath -Raw | ConvertFrom-Json
-  if($review.PSObject.Properties.Name -contains "devices"){
-    $reviewDeviceCount = @($review.devices).Count
-  }
+  if($review.PSObject.Properties.Name -contains "devices"){ $reviewDeviceCount = @($review.devices).Count }
 }
 
 $finished = [DateTime]::UtcNow
