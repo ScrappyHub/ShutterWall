@@ -1,6 +1,6 @@
 ﻿{
     "schema":  "shutterwall.device_registry.v1",
-    "updated_utc":  "2026-06-11T23:43:12.0327717Z",
+    "updated_utc":  "2026-06-24T16:07:30.6520178Z",
     "devices":  [
                     {
                         "ip":  "192.168.4.33",
@@ -768,7 +768,27 @@
                         "review_action":  "Recognized. Keep monitoring for fingerprint or baseline changes.",
                         "reviewed_utc":  "2026-06-11T23:43:12.0307694Z",
                         "review_decision_source":  "user_review",
-                        "last_change_type":  "manual_trust_enrollment"
+                        "last_change_type":  "manual_trust_enrollment",
+                        "service_class":  "Likely Router / Gateway",
+                        "service_confidence_percent":  72,
+                        "service_reason":  "DNS plus web administration service detected.",
+                        "open_ports":  [
+                                           53,
+                                           80
+                                       ],
+                        "services":  [
+                                         {
+                                             "port":  53,
+                                             "service":  "DNS",
+                                             "state":  "open"
+                                         },
+                                         {
+                                             "port":  80,
+                                             "service":  "HTTP",
+                                             "state":  "open"
+                                         }
+                                     ],
+                        "service_profiled_utc":  "2026-06-24T16:07:30.6440183Z"
                     },
                     {
                         "ip":  "192.168.4.11",

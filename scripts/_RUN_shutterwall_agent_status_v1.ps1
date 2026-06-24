@@ -3,55 +3,55 @@
 )
 
 Set-StrictMode -Version Latest
-$ErrorActionPreference="Stop"
+$ErrorActionPreference = "Stop"
 
-$RegPath = Join-Path $RepoRoot "state\agent\agent.registration.v1.json"
-$WatchPath = Join-Path $RepoRoot "state\watch\watch.status.v1.json"
-$PosturePath = Join-Path $RepoRoot "state\posture\posture.v1.json"
+$HeartbeatPath = Join-Path $RepoRoot "state\agent\heartbeat.latest.v1.json"
+$EnrollPath = Join-Path $RepoRoot "state\enrollment\enrolled_devices.v1.json"
+$RegistryPath = Join-Path $RepoRoot "state\device_registry\device_registry.v1.json"
 $CorrelationPath = Join-Path $RepoRoot "state\correlation\correlation.latest.v1.json"
-$OutPath = Join-Path $RepoRoot "state\agent\agent.status.v1.json"
 
-if(-not (Test-Path -LiteralPath $RegPath)){ throw "AGENT_NOT_ENROLLED" }
+$heartbeat = $null
+$enrolled = @()
+$trusted = 0
+$review = 0
+$high = 0
 
-$reg = Get-Content -LiteralPath $RegPath -Raw | ConvertFrom-Json
-
-$watch = $null
-if(Test-Path -LiteralPath $WatchPath){ $watch = Get-Content -LiteralPath $WatchPath -Raw | ConvertFrom-Json }
-
-$posture = $null
-if(Test-Path -LiteralPath $PosturePath){ $posture = Get-Content -LiteralPath $PosturePath -Raw | ConvertFrom-Json }
-
-$corr = $null
-if(Test-Path -LiteralPath $CorrelationPath){ $corr = Get-Content -LiteralPath $CorrelationPath -Raw | ConvertFrom-Json }
-
-$riskMax = "unknown"
-if($null -ne $corr){
-  $levels = @($corr.correlations | ForEach-Object { [string]$_.risk_level })
-  if($levels -contains "high"){ $riskMax = "high" }
-  elseif($levels -contains "medium"){ $riskMax = "medium" }
-  elseif($levels -contains "low"){ $riskMax = "low" }
-  else { $riskMax = "normal" }
+if(Test-Path -LiteralPath $HeartbeatPath){
+  $heartbeat = Get-Content -LiteralPath $HeartbeatPath -Raw | ConvertFrom-Json
 }
 
-$status = [ordered]@{
-  schema = "shutterwall.agent.status.v1"
-  generated_utc = [DateTime]::UtcNow.ToString("o")
-  device_label = [string]$reg.device_label
-  mode = [string]$reg.mode
-  ips_enabled = [bool]$reg.ips_enabled
-  auto_block_enabled = [bool]$reg.auto_block_enabled
-  watch_ok = if($null -ne $watch){ [bool]$watch.ok } else { $false }
-  last_watch_finished_utc = if($null -ne $watch){ [string]$watch.finished_at_utc } else { "" }
-  posture = if($null -ne $posture){ [string]$posture.posture_mode } else { "unknown" }
-  max_risk = $riskMax
+if(Test-Path -LiteralPath $EnrollPath){
+  $enrollDoc = Get-Content -LiteralPath $EnrollPath -Raw | ConvertFrom-Json
+  if($enrollDoc.PSObject.Properties.Name -contains "devices"){ $enrolled = @($enrollDoc.devices) }
 }
 
-($status | ConvertTo-Json -Depth 20) | Set-Content -Encoding UTF8 $OutPath
+if(Test-Path -LiteralPath $RegistryPath){
+  $reg = Get-Content -LiteralPath $RegistryPath -Raw | ConvertFrom-Json
+  foreach($d in @($reg.devices)){
+    $trust = if($d.PSObject.Properties.Name -contains "trust_state"){ [string]$d.trust_state } else { "unknown" }
+    if($trust -eq "trusted"){ $trusted += 1 } else { $review += 1 }
+  }
+}
 
-Write-Host ("AGENT_STATUS_PATH: " + $OutPath)
-Write-Host ("AGENT_DEVICE_LABEL: " + $status.device_label)
-Write-Host ("AGENT_MODE: " + $status.mode)
-Write-Host ("AGENT_WATCH_OK: " + $status.watch_ok)
-Write-Host ("AGENT_POSTURE: " + $status.posture)
-Write-Host ("AGENT_MAX_RISK: " + $status.max_risk)
+if(Test-Path -LiteralPath $CorrelationPath){
+  $corr = Get-Content -LiteralPath $CorrelationPath -Raw | ConvertFrom-Json
+  foreach($c in @($corr.correlations)){
+    if([string]$c.risk_level -eq "high"){ $high += 1 }
+  }
+}
+
+Write-Host ("AGENT_HEARTBEAT_PATH: " + $HeartbeatPath)
+if($null -ne $heartbeat){
+  Write-Host ("AGENT_STATUS: " + [string]$heartbeat.status)
+  Write-Host ("AGENT_LAST_RUN: " + [string]$heartbeat.finished_utc)
+  Write-Host ("AGENT_DEVICE_COUNT: " + [string]$heartbeat.device_count)
+  Write-Host ("AGENT_IDS_FINDING_COUNT: " + [string]$heartbeat.ids_finding_count)
+} else {
+  Write-Host "AGENT_STATUS: unknown"
+}
+
+Write-Host ("AGENT_ENROLLED_DEVICES: " + @($enrolled).Count)
+Write-Host ("AGENT_TRUSTED_DEVICES: " + $trusted)
+Write-Host ("AGENT_REVIEW_DEVICES: " + $review)
+Write-Host ("AGENT_HIGH_RISK_DEVICES: " + $high)
 Write-Host "SHUTTERWALL_AGENT_STATUS_V1_OK"
