@@ -1,6 +1,6 @@
 {
     "schema":  "shutterwall.review.v1",
-    "updated_at_utc":  "2026-06-24T18:55:26.1293426Z",
+    "updated_at_utc":  "2026-06-24T23:15:55.0226276Z",
     "posture_mode":  "Review Needed",
     "recommended_action":  "Review the latest network change before re-baselining.",
     "device_count":  40,

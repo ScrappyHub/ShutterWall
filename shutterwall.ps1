@@ -241,7 +241,23 @@ switch ($Command) {
   "inspect" { Invoke-Inspect; return }
 
   "enroll-device" {
-    Invoke-Script -ScriptName "scripts\_RUN_shutterwall_enroll_device_v1.ps1" -ExtraArgs @("-RepoRoot",$RepoRoot)
+    if($CommandArgs.Count -lt 2){ throw "USAGE: shutterwall enroll-device <ip> [label]" }
+
+    $ip = [string]$CommandArgs[1]
+    $label = ""
+
+    if($CommandArgs.Count -ge 3){
+      $label = [string]($CommandArgs[2..($CommandArgs.Count - 1)] -join " ")
+    }
+
+    & "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" `
+      -NoProfile `
+      -ExecutionPolicy Bypass `
+      -File (Join-Path $RepoRoot "scripts\_RUN_shutterwall_enroll_device_v1.ps1") `
+      -RepoRoot $RepoRoot `
+      -Ip $ip `
+      -Label $label
+
     return
   }
 
