@@ -1,0 +1,33 @@
+{
+    "project_id":  "shutterwall",
+    "canonical_name":  "ShutterWall",
+    "ecosystem":  {
+                      "registry_schema":  "constellation.service.registry.v1",
+                      "service_id":  "shutterwall",
+                      "layer":  "protection.camera-exposure",
+                      "role":  "Local-first camera protection and exposure-governance instrument.",
+                      "standalone_first":  true,
+                      "upstream_services":  [
+                                                "homegate",
+                                                "covenant-gate",
+                                                "neverlost"
+                                            ],
+                      "downstream_users":  [
+                                               "watchtower",
+                                               "live-state-surgeon",
+                                               "operators"
+                                           ],
+                      "contract_families":  [
+                                                "device",
+                                                "camera",
+                                                "fingerprint",
+                                                "risk",
+                                                "review",
+                                                "enforcement",
+                                                "receipt"
+                                            ],
+                      "service_map_path":  "C:\\dev\\Constellation\\ecosystem\\SERVICE_MAP.md",
+                      "registry_path":  "C:\\dev\\Constellation\\registry\\services.json",
+                      "integration_doc_path":  "docs/canonical/ECOSYSTEM_INTEGRATION.md"
+                  }
+}
