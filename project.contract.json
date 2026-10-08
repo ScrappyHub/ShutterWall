@@ -26,8 +26,8 @@
                                                 "enforcement",
                                                 "receipt"
                                             ],
-                      "service_map_path":  "C:\\dev\\Constellation\\ecosystem\\SERVICE_MAP.md",
-                      "registry_path":  "C:\\dev\\Constellation\\registry\\services.json",
+                      "service_map_path":  "../Constellation/ecosystem/SERVICE_MAP.md",
+                      "registry_path":  "../Constellation/registry/services.json",
                       "integration_doc_path":  "docs/canonical/ECOSYSTEM_INTEGRATION.md"
                   }
 }
